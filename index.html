@@ -30,6 +30,12 @@
     .sidenav a:hover {
       color: #064579;
     }
+
+    #selected-cell {
+      border-style: dashed;
+      border-width: 1px;
+      border: black;
+    }
     
     .main {
       margin-left: 140px; /* Same width as the sidebar + left position in px */
@@ -43,19 +49,22 @@
     }
 
     .btn-group button {
-      /* background-color: #04AA6D; */ /* Green background */
-      /*border: 1px solid green; */ /* Green border */
-      /* color: white; */ /* White text */
-      /*cursor: pointer; */ /* Pointer/hand icon */
-      /*width: 50%; */ /* Set a width if needed */
       display: block; /* Make the buttons appear below each other */
-}
+    }
   </style>
   <body>
     <div class="sidenav">
-      <div class="btn-group">
-        <button onclick="showCell()">click</button>
-        <canvas id="cell"></canvas>
+      <div>
+        <table>
+          <tbody>
+            <td>
+              <input id="submit" type="button" value="get cell" onclick="showCell(8000)" />
+            </td>
+            <td>
+              <canvas id="selected-cell" width="56" height="56"></canvas>
+            </td>
+          </tbody>
+        </table>
       </div>
     </div>
     <canvas id="map">
