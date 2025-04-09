@@ -31,7 +31,7 @@
       color: #064579;
     }
 
-    #selected-cell {
+    #selected-tile {
       border-style: dashed;
       border-width: 1px;
       border: black;
@@ -57,19 +57,23 @@
       <div>
         <table>
           <tbody>
-            <td>
-              <input id="submit" type="button" value="get cell" onclick="showCell(8000)" />
-            </td>
-            <td>
-              <canvas id="selected-cell" width="56" height="56"></canvas>
-            </td>
+            <tr>
+              <td>
+                <input id="submit" type="button" value="get tile" onclick="showtile(8000)" />
+              </td>
+              <td>
+                <canvas id="selected-tile" width="56" height="56"></canvas>
+              </td>
+            </tr>
+            <tr>
+              <input type="checkbox" id="grid" name="grid" onclick="toggleGrid()">
+              <label for="grid">Show grid lines</label>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <canvas id="map">
-      <img src="map.png" />
-    </canvas>
+    <canvas id="map"></canvas>
     <script src="index.js"></script>
   </body>
 </html>
