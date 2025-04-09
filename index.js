@@ -6,6 +6,7 @@ const canvas = document.getElementById('map');
 const ctx = canvas.getContext('2d');
 const cellCanvas = document.getElementById('selected-cell');
 const cellCtx = cellCanvas.getContext('2d');
+cellCtx.imageSmoothingEnabled = true;
 
 let cells = [];
 
@@ -20,7 +21,6 @@ function draw() {
   console.log('height: ', canvas.height);
 
   ctx.drawImage(image, 0, 0);
-  cellCtx.fillRect(0, 0, 56, 56);
 
   gridToCells(canvas, ctx);
 
@@ -85,22 +85,13 @@ function selectCell(e, dest, canvas, ctx) {
   dest.style.background = rgbColor;
   dest.textContent = rgbColor;
 
+  cellCtx.drawImage(canvas, x, y, 14, 14, 0, 0, 56, 56);
+
   console.log('pixel width: ', x);
   console.log('pixel height: ', y);
   console.log('pixel color: ', rgbColor);
 
   return rgbColor;
-}
-
-function firstCell(e, dest, canvas, ctx) {
-  const bounding = canvas.getBoundingClientRect();
-  const x = e.clientX - bounding.left;
-  const y = e.clientY - bounding.top;
-  const pixel = ctx.getImageData(x, y, 14, 14);
-  const data = pixel.data;
-
-  console.log('pixel width: ', x);
-  console.log('pixel height: ', y);
 }
 
 // Splits the entire grid into a collection of cells to be searchable and usable for
