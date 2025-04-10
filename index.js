@@ -29,9 +29,6 @@ function toggleGrid() {
   let checkbox = document.getElementById("grid");
 
   if (checkbox.checked) {
-
-    ctx.save();
-
     const width = canvas.width;
     const height = canvas.height;
     const step = 14;
@@ -65,7 +62,7 @@ function toggleGrid() {
   }
 
   else {
-    ctx.restore();
+    ctx.drawImage(image, 0, 0);
   }
 }
 
