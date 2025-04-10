@@ -9,7 +9,7 @@
     }
     
     .sidenav {
-      width: 130px;
+      width: 180px;
       position: fixed;
       z-index: 1;
       top: 20px;
@@ -59,15 +59,20 @@
           <tbody>
             <tr>
               <td>
-                <input id="submit" type="button" value="get tile" onclick="showTile(8000)" />
+                <input id="submit" type="button" value="Get Tile" onclick="showTile(8000)" />
+              </td>
+              <td>
+                <input id="download" type="button" value="Download Tile" onclick="downloadTile()" />
               </td>
               <td>
                 <canvas id="selected-tile" width="56" height="56"></canvas>
               </td>
             </tr>
             <tr>
-              <input type="checkbox" id="grid" name="grid" onclick="toggleGrid()">
-              <label for="grid">Show grid lines</label>
+              <td>
+                <input type="checkbox" id="grid" name="grid" onclick="toggleGrid()">
+                <label for="grid">Show grid lines</label>
+              </td>
             </tr>
           </tbody>
         </table>

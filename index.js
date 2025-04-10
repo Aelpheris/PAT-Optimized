@@ -8,6 +8,8 @@ const tileCanvas = document.getElementById('selected-tile');
 const tileCtx = tileCanvas.getContext('2d');
 tileCtx.imageSmoothingEnabled = true;
 
+const download = document.getElementById('download');
+
 const tileSize = 14;
 let tiles = [];
 
@@ -121,9 +123,19 @@ function showTile(id) {
   tileCtx.drawImage(canvas, tiles[id].x, tiles[id].y, tileSize, tileSize, 0, 0, 56, 56);
 }
 
+function downloadTile() {
+  const link = document.createElement('a');
+  link.download = 'tile';
+  link.href = tileCanvas.toDataURL();
+  link.click();
+  link.remove();
+
+}
+
 canvas.addEventListener('click', (event) => {
-  console.log('clicked');
   selectTile(event, tileCanvas, canvas, ctx);
 });
 
+download.addEventListener('click', (event) => {
 
+})
