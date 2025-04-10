@@ -1,6 +1,6 @@
 const image = new Image();
 image.crossOrigin = "Anonymous";
-image.src = './test-map-1.png';
+image.src = './map.png';
 
 const canvas = document.getElementById('map');
 const ctx = canvas.getContext('2d');
@@ -66,21 +66,7 @@ function toggleGrid() {
   }
 }
 
-function cliptile(image, x, y, width, height) {
-  
-  let canvas = document.createElement('canvas');
-  ctx = canvas.getContext('2d');
-
-  canvas.width = width;
-  canvas.height = height;
-
-  //                   source region         dest. region
-  ctx.drawImage(image, x, y, width, height,  0, 0, width, height);
-
-  return canvas;
-}
-
-function selecttile(e, dest, canvas, ctx) {
+function selectTile(e, dest, canvas, ctx) {
   const bounding = canvas.getBoundingClientRect();
   const x = e.clientX - bounding.left;
   const y = e.clientY - bounding.top;
@@ -126,9 +112,9 @@ function gridTotiles(canvas, ctx) {
   return tiles;
 }
 
-function showtile(id) {
+function showTile(id) {
 
-  console.log('showtile');
+  console.log('showTile');
 
   console.log('tile: ', tiles[id]);
 
@@ -139,7 +125,7 @@ function showtile(id) {
 
 canvas.addEventListener('click', (event) => {
   console.log('clicked');
-  selecttile(event, tileCanvas, canvas, ctx);
+  selectTile(event, tileCanvas, canvas, ctx);
 });
 
 
