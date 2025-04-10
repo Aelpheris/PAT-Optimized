@@ -8,6 +8,7 @@ const tileCanvas = document.getElementById('selected-tile');
 const tileCtx = tileCanvas.getContext('2d');
 tileCtx.imageSmoothingEnabled = true;
 
+const tileSize = 14;
 let tiles = [];
 
 image.onload = draw;
@@ -22,7 +23,7 @@ function draw() {
 
   ctx.drawImage(image, 0, 0);
 
-  gridTotiles(canvas, ctx);
+  gridToTiles(canvas, ctx);
 }
 
 function toggleGrid() {
@@ -31,11 +32,10 @@ function toggleGrid() {
   if (checkbox.checked) {
     const width = canvas.width;
     const height = canvas.height;
-    const step = 14;
 
     ctx.beginPath();
 
-    for (let x = 0; x <= width; x += step) {
+    for (let x = 0; x <= width; x += tileSize) {
       ctx.moveTo(x, 0);
       ctx.lineTo(x, height);
     }
@@ -48,7 +48,7 @@ function toggleGrid() {
     // for the sake of the example 2nd path
     ctx.beginPath();
 
-    for (let y = 0; y <= height; y += step) {
+    for (let y = 0; y <= height; y += tileSize) {
       ctx.moveTo(0, y);
       ctx.lineTo(width, y);
     }
@@ -70,34 +70,18 @@ function selectTile(e, dest, canvas, ctx) {
   const bounding = canvas.getBoundingClientRect();
   const x = e.clientX - bounding.left;
   const y = e.clientY - bounding.top;
-  const pixel = ctx.getImageData(x, y, 1, 1);
-  const data = pixel.data;
 
-  const rgbColor = `rgb(${data[0]} ${data[1]} ${data[2]} / ${data[3] / 255})`;
-  dest.style.background = rgbColor;
-  dest.textContent = rgbColor;
-
-  tileCtx.drawImage(canvas, x, y, 14, 14, 0, 0, 56, 56);
-
-  console.log('pixel width: ', x);
-  console.log('pixel height: ', y);
-  console.log('pixel color: ', rgbColor);
-
-  return rgbColor;
+  tileCtx.drawImage(canvas, x, y, tileSize, tileSize, 0, 0, 56, 56);
 }
 
 // Splits the entire grid into a collection of tiles to be searchable and usable for
 // selecting individual tiles
-function gridTotiles(canvas, ctx) {
+function gridToTiles(canvas, ctx) {
   let tile = document.createElement('canvas');
   ctx = tile.getContext('2d');
 
-  tile.width = 14;
-  tile.height = 14;
-
-
-  for (let y = 0; y <= canvas.height; y += tile.height) {
-    for (let x = 0; x <= canvas.width; x += tile.width) {
+  for (let y = 0; y <= canvas.height; y += tileSize) {
+    for (let x = 0; x <= canvas.width; x += tileSize) {
       const tile = {
         'sx': x,
         'sy': y,
@@ -120,7 +104,7 @@ function showTile(id) {
 
   // tileCtx.putImageData(tiles[0].data, 0, 0);
 
-  tileCtx.drawImage(canvas, tiles[id].x, tiles[id].y, 14, 14, 0, 0, 56, 56);
+  tileCtx.drawImage(canvas, tiles[id].x, tiles[id].y, tileSize, tileSize, 0, 0, 56, 56);
 }
 
 canvas.addEventListener('click', (event) => {
