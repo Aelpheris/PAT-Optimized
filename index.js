@@ -88,6 +88,9 @@ function selectTile(e, dest, canvas, ctx) {
 
   // Draw selected tile to navbar canvas
   tileCtx.drawImage(canvas, tileX, tileY, tileSize, tileSize, 0, 0, 56, 56);
+
+  // Enable downloading
+  document.getElementById('download').disabled = false;
 }
 
 // Splits the entire grid into a collection of tiles to be searchable and usable for
@@ -113,13 +116,6 @@ function gridToTiles(canvas, ctx) {
 }
 
 function showTile(id) {
-
-  console.log('showTile');
-
-  console.log('tile: ', tiles[id]);
-
-  // tileCtx.putImageData(tiles[0].data, 0, 0);
-
   tileCtx.drawImage(canvas, tiles[id].x, tiles[id].y, tileSize, tileSize, 0, 0, 56, 56);
 }
 
@@ -129,7 +125,6 @@ function downloadTile() {
   link.href = tileCanvas.toDataURL();
   link.click();
   link.remove();
-
 }
 
 canvas.addEventListener('click', (event) => {
