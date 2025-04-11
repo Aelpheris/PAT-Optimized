@@ -11,4 +11,4 @@
 - [ ] Require selected tile canvas to be non-blank before downloading
 - [ ] Add highlighting over selected tile(s)
 - [ ] Allow user to drag and select multiple tiles
-- [ ] Change side nav to CSS grid structure
+- [x] Change side nav to CSS grid structure

@@ -17,6 +17,9 @@
       background: #eee;
       overflow-x: hidden;
       padding: 8px 0;
+      padding-left: 8px;
+      display: grid;
+      row-gap: 8px;
     }
     
     .sidenav a {
@@ -55,27 +58,17 @@
   <body>
     <div class="sidenav">
       <div>
-        <table>
-          <tbody>
-            <tr>
-              <td>
-                <input id="submit" type="button" value="Get Tile" onclick="showTile(8000)" />
-              </td>
-              <td>
-                <input id="download" type="button" value="Download Tile" onclick="downloadTile()" />
-              </td>
-              <td>
-                <canvas id="selected-tile" width="56" height="56"></canvas>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <input type="checkbox" id="grid" name="grid" onclick="toggleGrid()">
-                <label for="grid">Show grid lines</label>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <input id="submit" type="button" value="Get Tile" onclick="showTile(8000)" />
+      </div>
+      <div>
+        <canvas id="selected-tile" width="56" height="56"></canvas>
+      </div>
+      <div>
+        <input id="download" type="button" value="Download Tile" onclick="downloadTile()" />
+      </div>
+      <div>
+        <input type="checkbox" id="grid" name="grid" onclick="toggleGrid()">
+        <label for="grid">Show grid lines</label>
       </div>
     </div>
     <canvas id="map"></canvas>
