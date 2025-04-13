@@ -1,11 +1,19 @@
 # UI
 - [ ] Add info box to display tile attributes
+- [ ] Add ability to select multiple tiles at once
 
 # Tiles
-- [ ] Detect unexplored (completely black) tiles
 - [ ] Detect home settlement
 - [ ] Calculate distance a tile is from home settlement
-- [ ] Calculate gold expenditure restoring a grey tile
+- [ ] Calculate gold expenditure restoring a gray tile
+- [ ] Show radius of buildings for foundries, fishing boats, sensor towers, etc.
+- [x] Download tile images directly to disk
+- [ ] Save tile image data to disk
+- [ ] Tile matching based on type
+  - [ ] Unexplored (black)
+  - [ ] Unexplored (gray)
+  - [ ] Plains
+  - [ ] Lvl 3 forest
 
 # QoL Improvements
 - [ ] Disable tile download button until tile is selected

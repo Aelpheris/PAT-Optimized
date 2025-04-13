@@ -8,8 +8,6 @@ const tileCanvas = document.getElementById('selected-tile')
 const tileCtx = tileCanvas.getContext('2d')
 tileCtx.imageSmoothingEnabled = true
 
-const download = document.getElementById('download')
-
 const tileSize = 14
 let tiles = []
 
@@ -37,7 +35,7 @@ function toggleGrid() {
 
     ctx.beginPath()
 
-    for (let x = 0 x <= width x += tileSize) {
+    for (let x = 0; x <= width; x += tileSize) {
       ctx.moveTo(x, 0)
       ctx.lineTo(x, height)
     }
@@ -50,7 +48,7 @@ function toggleGrid() {
     // for the sake of the example 2nd path
     ctx.beginPath()
 
-    for (let y = 0 y <= height y += tileSize) {
+    for (let y = 0; y <= height; y += tileSize) {
       ctx.moveTo(0, y)
       ctx.lineTo(width, y)
     }
@@ -90,7 +88,7 @@ function selectTile(e, dest, canvas, ctx) {
   tileCtx.drawImage(canvas, tileX, tileY, tileSize, tileSize, 0, 0, 56, 56)
 
   // Enable downloading
-  document.getElementById('download').disabled = false
+  document.getElementById('downloadButton').disabled = false
 }
 
 // Splits the entire grid into a collection of tiles to be searchable and usable for
@@ -99,8 +97,8 @@ function gridToTiles(canvas, ctx) {
   let tile = document.createElement('canvas')
   ctx = tile.getContext('2d')
 
-  for (let y = 0 y <= canvas.height y += tileSize) {
-    for (let x = 0 x <= canvas.width x += tileSize) {
+  for (let y = 0; y <= canvas.height; y += tileSize) {
+    for (let x = 0; x <= canvas.width; x += tileSize) {
       const tile = {
         'sx': x,
         'sy': y,
@@ -127,18 +125,34 @@ function downloadTile() {
   link.remove()
 }
 
-async function tileToBlob(name) {
-  await tileCanvas.toBlob((blob) => {
-    const postRes = fetch(url, {
-      method: 'post',
-      headers: {
-        'Content-Type': 'image/png'
-      },
-      body: blob
+function download() {
+  const url = 'http://localhost:3000/download'
+
+  tileCanvas.toBlob((blob) => {
+    const formData = new FormData()
+    formData.append('image', blob, 'tile.png')
+
+    fetch(url, {
+      method: 'POST',
+      body: formData,
     })
-  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`)
+      }
+      return response.json()
+    })
+    .then(data => {
+      console.log('File download successful: ', data)
+    })
+    .catch(error => {
+      console.error('Error downloading file: ', error)
+    })
+  }, 'image/png')
 }
 
 canvas.addEventListener('click', (event) => {
   selectTile(event, tileCanvas, canvas, ctx)
 })
+
+document.getElementById('downloadButton').addEventListener('click', download)

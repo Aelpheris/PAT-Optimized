@@ -1,10 +1,14 @@
 {
   "scripts": {
     "start": "http-server --cors -p 8080 -c-1",
-    "dev": "nodemon -e js,html --exec \"npm run start\""
+    "dev": "nodemon -e js,html --exec \"npm run start\"",
+    "server": "node server.js"
   },
   "dependencies": {
-    "http-server": "^14.1.1"
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "http-server": "^14.1.1",
+    "multer": "^1.4.5-lts.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
