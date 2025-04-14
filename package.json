@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "scripts": {
     "start": "http-server --cors -p 8080 -c-1",
     "dev": "nodemon -e js,html --exec \"npm run start\"",

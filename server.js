@@ -1,8 +1,8 @@
-const express = require('express')
-const cors = require('cors')
-const multer = require('multer')
-const path = require('path')
-const fs = require('fs')
+import express from 'express'
+import cors from 'cors'
+import multer from 'multer'
+import path from 'path'
+import fs from 'fs'
 
 const app = express()
 const port = 3000
