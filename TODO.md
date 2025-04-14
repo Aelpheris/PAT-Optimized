@@ -1,6 +1,7 @@
 # UI
 - [ ] Add info box to display tile attributes
 - [ ] Add ability to drag and select multiple tiles at once
+- [ ] Add highlighting over selected tile(s)
 
 # Tiles
 - [ ] Detect home settlement
@@ -19,6 +20,5 @@
 
 # QoL Improvements
 - [x] Disable tile download button until tile is selected
-- [ ] Add highlighting over selected tile(s)
 - [x] Change side nav to CSS grid structure
 - [x] change frontend structure to JS modules for better file organization and structure

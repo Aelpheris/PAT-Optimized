@@ -1,6 +1,6 @@
 const tileSize = 14
 
-export function selectTile(e, canvas, ctx) {
+export function select(e, canvas, ctx) {
   const bounding = canvas.getBoundingClientRect()
   const x = e.clientX - bounding.left
   const y = e.clientY - bounding.top
@@ -23,4 +23,30 @@ export function selectTile(e, canvas, ctx) {
 
   // Enable downloading
   document.getElementById('downloadButton').disabled = false
+}
+
+export function download(canvas) {
+  const url = 'http://localhost:3000/download'
+
+  canvas.toBlob((blob) => {
+    const formData = new FormData()
+    formData.append('image', blob, 'tile.png')
+
+    fetch(url, {
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`)
+      }
+      return response.json()
+    })
+    .then(data => {
+      console.log('File download successful: ', data)
+    })
+    .catch(error => {
+      console.error('Error downloading file: ', error)
+    })
+  }, 'image/png')
 }

@@ -103,38 +103,14 @@ function downloadTile() {
   link.remove()
 }
 
-function download() {
-  const url = 'http://localhost:3000/download'
-
-  tileCanvas.toBlob((blob) => {
-    const formData = new FormData()
-    formData.append('image', blob, 'tile.png')
-
-    fetch(url, {
-      method: 'POST',
-      body: formData,
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`)
-      }
-      return response.json()
-    })
-    .then(data => {
-      console.log('File download successful: ', data)
-    })
-    .catch(error => {
-      console.error('Error downloading file: ', error)
-    })
-  }, 'image/png')
-}
-
 function matchTiles(tileOne, tileTwo) {
 
 }
 
 canvas.addEventListener('click', (event) => {
-  Tile.selectTile(event, canvas, tileCtx)
+  Tile.select(event, canvas, tileCtx)
 })
 
-document.getElementById('downloadButton').addEventListener('click', download)
+document.getElementById('downloadButton').addEventListener('click', () => {
+  Tile.download(tileCanvas)
+})
