@@ -1,6 +1,6 @@
 # UI
 - [ ] Add info box to display tile attributes
-- [ ] Add ability to select multiple tiles at once
+- [ ] Add ability to drag and select multiple tiles at once
 
 # Tiles
 - [ ] Detect home settlement
@@ -9,6 +9,8 @@
 - [ ] Show radius of buildings for foundries, fishing boats, sensor towers, etc.
 - [x] Download tile images directly to disk
 - [ ] Save tile image data to disk
+- [ ] Match two tiles if they are identical
+- [ ] Match all tiles against each other and return total number of tiles
 - [ ] Tile matching based on type
   - [ ] Unexplored (black)
   - [ ] Unexplored (gray)
@@ -16,7 +18,7 @@
   - [ ] Lvl 3 forest
 
 # QoL Improvements
-- [ ] Disable tile download button until tile is selected
+- [x] Disable tile download button until tile is selected
 - [ ] Add highlighting over selected tile(s)
-- [ ] Allow user to drag and select multiple tiles
 - [x] Change side nav to CSS grid structure
+- [x] change frontend structure to JS modules for better file organization and structure

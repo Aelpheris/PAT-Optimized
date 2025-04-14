@@ -1,3 +1,6 @@
+import * as Tile from './modules/Tile.js'
+
+
 const image = new Image()
 image.crossOrigin = "Anonymous"
 image.src = './map.png'
@@ -66,31 +69,6 @@ function toggleGrid() {
   }
 }
 
-function selectTile(e, dest, canvas, ctx) {
-  const bounding = canvas.getBoundingClientRect()
-  const x = e.clientX - bounding.left
-  const y = e.clientY - bounding.top
-
-  // Match selected pixel to tile in which it resides
-  console.log('clientX: ', e.clientX, 'clientY: ', e.clientY)
-  console.log('bounding.left: ', bounding.left, 'bounding.top: ', bounding.top)
-  console.log('x:', x, 'y: ', y)
-
-  // Get remainder of x and y click position divided by tile size
-  const pixelX = x % tileSize
-  const pixelY = y % tileSize
-
-  // Subtract remainders to height and width of image to get a whole tile
-  const tileX = x - pixelX
-  const tileY = y - pixelY
-
-  // Draw selected tile to navbar canvas
-  tileCtx.drawImage(canvas, tileX, tileY, tileSize, tileSize, 0, 0, 56, 56)
-
-  // Enable downloading
-  document.getElementById('downloadButton').disabled = false
-}
-
 // Splits the entire grid into a collection of tiles to be searchable and usable for
 // selecting individual tiles
 function gridToTiles(canvas, ctx) {
@@ -151,8 +129,12 @@ function download() {
   }, 'image/png')
 }
 
+function matchTiles(tileOne, tileTwo) {
+
+}
+
 canvas.addEventListener('click', (event) => {
-  selectTile(event, tileCanvas, canvas, ctx)
+  Tile.selectTile(event, canvas, tileCtx)
 })
 
 document.getElementById('downloadButton').addEventListener('click', download)
