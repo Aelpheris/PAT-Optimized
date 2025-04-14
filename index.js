@@ -12,7 +12,7 @@ const tileCtx = tileCanvas.getContext('2d')
 tileCtx.imageSmoothingEnabled = true
 
 const tileSize = 14
-let tiles = []
+let tilesMap = new Map()
 
 image.onload = draw
 
@@ -26,7 +26,8 @@ function draw() {
 
   ctx.drawImage(image, 0, 0)
 
-  gridToTiles(canvas, ctx)
+  tilesMap = Tile.canvasToTileMap(canvas, tileSize, tileSize)
+  console.log('number of tiles: ', tilesMap.size)
 }
 
 function toggleGrid() {
@@ -103,12 +104,15 @@ function downloadTile() {
   link.remove()
 }
 
-function matchTiles(tileOne, tileTwo) {
-
+function updateTileAttributeBox(tileData) {
+  const text = `<p>Coordinates: (${tileData.tileX}, ${tileData.tileY})</p>`
+  const textBox = document.getElementById('attributeTextBox')
+  textBox.innerHTML = text
 }
 
 canvas.addEventListener('click', (event) => {
-  Tile.select(event, canvas, tileCtx)
+  const tileData = Tile.select(event, canvas, tilesMap, tileCanvas)
+  updateTileAttributeBox(tileData)
 })
 
 document.getElementById('downloadButton').addEventListener('click', () => {
