@@ -5,8 +5,8 @@ const image = new Image()
 image.crossOrigin = "Anonymous"
 image.src = './map.png'
 
-const canvas = document.getElementById('map')
-const ctx = canvas.getContext('2d')
+const mapCanvas = document.getElementById('map')
+const mapCtx = mapCanvas.getContext('2d')
 const tileCanvas = document.getElementById('selected-tile')
 const tileCtx = tileCanvas.getContext('2d')
 tileCtx.imageSmoothingEnabled = true
@@ -18,15 +18,15 @@ image.onload = draw
 
 
 function draw() {
-  canvas.width = image.naturalWidth
-  canvas.height = image.naturalHeight
+  mapCanvas.width = image.naturalWidth
+  mapCanvas.height = image.naturalHeight
 
-  console.log('width: ', canvas.width)
-  console.log('height: ', canvas.height)
+  console.log('width: ', mapCanvas.width)
+  console.log('height: ', mapCanvas.height)
 
-  ctx.drawImage(image, 0, 0)
+  mapCtx.drawImage(image, 0, 0)
 
-  tilesMap = Tile.canvasToTileMap(canvas, tileSize, tileSize)
+  tilesMap = Tile.canvasToTileMap(mapCanvas, tileSize, tileSize)
   console.log('number of tiles: ', tilesMap.size)
 }
 
@@ -34,39 +34,39 @@ function toggleGrid() {
   let checkbox = document.getElementById("grid")
 
   if (checkbox.checked) {
-    const width = canvas.width
-    const height = canvas.height
+    const width = mapCanvas.width
+    const height = mapCanvas.height
 
-    ctx.beginPath()
+    mapCtx.beginPath()
 
     for (let x = 0; x <= width; x += tileSize) {
-      ctx.moveTo(x, 0)
-      ctx.lineTo(x, height)
+      mapCtx.moveTo(x, 0)
+      mapCtx.lineTo(x, height)
     }
 
     // set the color of the line
-    ctx.strokeStyle = 'Gainsboro'
-    ctx.lineWidth = 1
+    mapCtx.strokeStyle = 'Gainsboro'
+    mapCtx.lineWidth = 1
     // the stroke will actually paint the current path 
-    ctx.stroke()
+    mapCtx.stroke()
     // for the sake of the example 2nd path
-    ctx.beginPath()
+    mapCtx.beginPath()
 
     for (let y = 0; y <= height; y += tileSize) {
-      ctx.moveTo(0, y)
-      ctx.lineTo(width, y)
+      mapCtx.moveTo(0, y)
+      mapCtx.lineTo(width, y)
     }
 
     // set the color of the line
-    ctx.strokeStyle = 'Gainsboro'
+    mapCtx.strokeStyle = 'Gainsboro'
     // just for fun
-    ctx.lineWidth = 1
+    mapCtx.lineWidth = 1
     // for your original question - you need to stroke only once
-    ctx.stroke()
+    mapCtx.stroke()
   }
 
   else {
-    ctx.drawImage(image, 0, 0)
+    mapCtx.drawImage(image, 0, 0)
   }
 }
 
@@ -93,7 +93,7 @@ function gridToTiles(canvas, ctx) {
 }
 
 function showTile(id) {
-  tileCtx.drawImage(canvas, tiles[id].x, tiles[id].y, tileSize, tileSize, 0, 0, 56, 56)
+  tileCtx.drawImage(mapCanvas, tiles[id].x, tiles[id].y, tileSize, tileSize, 0, 0, 56, 56)
 }
 
 function downloadTile() {
@@ -110,8 +110,8 @@ function updateTileAttributeBox(tileData) {
   textBox.innerHTML = text
 }
 
-canvas.addEventListener('click', (event) => {
-  const tileData = Tile.select(event, canvas, tilesMap, tileCanvas)
+mapCanvas.addEventListener('click', (event) => {
+  const tileData = Tile.select(event, mapCanvas, tilesMap, tileCanvas)
   updateTileAttributeBox(tileData)
 })
 
