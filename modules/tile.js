@@ -5,10 +5,10 @@ const TILE_HEIGHT = 14
 export function select(event, mapCanvas, tilesMap, tileCanvas) {
   const tileCtx = tileCanvas.getContext('2d')
 
-  const tileData = fromMap(event, mapCanvas, tilesMap, tileCanvas)
+  const tileData = fromMap(event, mapCanvas, tilesMap)
 
   // Draw selected tile to navbar canvas
-  tileCtx.drawImage(mapCanvas, tileData.oX, tileData.oY, tileSize, tileSize, 0, 0, 56, 56)
+  tileCtx.drawImage(mapCanvas, tileData.originX, tileData.originY, tileSize, tileSize, 0, 0, 56, 56)
 
   // Enable downloading
   document.getElementById('downloadButton').disabled = false
@@ -39,14 +39,15 @@ export function sliceCanvasWithMap(canvas, tileWidth, tileHeight) {
       )
 
       const data = {
-        // X coordinate on map canvas
+        // X coordinate of tile origin on map canvas
         oX: x * tileWidth,
-        // Y coordinate on map canvas
+        // Y coordinate of tile origin on map canvas
         oY: y * tileHeight,
-        // X coordinate of tile based on map
+        // X coordinate of tile based on tile grid
         tileX: x,
-        // Y coordinate of tile based on map
-        tileY: y
+        // Y coordinate of tile based on tile grid
+        tileY: y,
+        imageData: imageData
       }
 
 
@@ -64,7 +65,7 @@ export function sliceCanvasInBackground(canvas, tileWidth, tileHeight) {
   return new Promise((resolve, reject) => {
     // Create a copy of the canvas image data to send to worker
     const imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
-    
+
     // Create worker
     const worker = new Worker('./modules/slice-worker.js');
 
@@ -76,9 +77,9 @@ export function sliceCanvasInBackground(canvas, tileWidth, tileHeight) {
       tileWidth: tileWidth,
       tileHeight: tileHeight
     }, [imageData.data.buffer]); // Transfer ownership of the buffer to avoid copying
-    
+
     // Handle worker response
-    worker.onmessage = function(e) {
+    worker.onmessage = function (e) {
       if (e.data.error) {
         reject(new Error(e.data.error));
       } else {
@@ -92,41 +93,54 @@ export function sliceCanvasInBackground(canvas, tileWidth, tileHeight) {
             tile.width,
             tile.height
           );
-          
-          tilesMap.set(tile.key, tileImageData);
+
+          const data = {
+            // X coordinate of tile origin on map canvas
+            originX: tile.originX,
+            // Y coordinate of tile origin on map canvas
+            originY: tile.originY,
+            // X coordinate of tile based on tile grid
+            tileX: tile.tileX,
+            // Y coordinate of tile based on tile grid
+            tileY: tile.tileY,
+            imageData: tileImageData
+          }
+
+          tilesMap.set(tile.key, data);
         }
-        
+
         // Terminate worker
         worker.terminate();
-        
+
         // Resolve promise with the tiles map
         resolve(tilesMap);
       }
     };
-    
+
     // Handle errors
-    worker.onerror = function(error) {
+    worker.onerror = function (error) {
       worker.terminate();
       reject(error);
     };
   });
 }
 
-export function fromMap(event, canvas, tilesMap, tileCanvas) {
-  const tileCtx = tileCanvas.getContext('2d')
+export function fromMap(event, canvas, tilesMap) {
   const rect = canvas.getBoundingClientRect()
+
+  // Represents the exact x,y coordinates of the mouse click the canvas
   const x = event.clientX - rect.left
   const y = event.clientY - rect.top
 
   // Calculate which tile was clicked
-  const tileX = Math.floor(x / TILE_WIDTH)
-  const tileY = Math.floor(y / TILE_HEIGHT)
-
-  console.log(`tile coordinates - x: ${tileX}, y: ${tileY}`)
+  const mapX = Math.floor(x / TILE_WIDTH)
+  const mapY = Math.floor(y / TILE_HEIGHT)
 
   // Get the tile from the map
-  const key = `${tileX},${tileY}`
+  const key = `${mapX},${mapY}`
+  console.log('key: ', key)
   const tileData = tilesMap.get(key)
+  console.log('tileData: ', tileData)
 
   if (tileData) {
     return tileData
@@ -138,21 +152,21 @@ export function findUniqueTilesInBackground(tilesMap, tileWidth, tileHeight) {
   return new Promise((resolve, reject) => {
     // Create worker
     const worker = new Worker('./modules/tile-worker.js');
-    
+
     // Prepare data to send to worker
     const tilesData = [];
     const keys = [];
-    
+
     // Convert Map to serializable arrays
-    for (const [key, imageData] of tilesMap) {
+    for (const [key, tile] of tilesMap) {
       keys.push(key);
       tilesData.push({
-        width: imageData.width,
-        height: imageData.height,
-        data: Array.from(imageData.data)  // Convert Uint8ClampedArray to regular array
+        width: tile.imageData.width,
+        height: tile.imageData.height,
+        data: Array.from(tile.imageData.data)  // Convert Uint8ClampedArray to regular array
       });
     }
-    
+
     // Send data to worker
     worker.postMessage({
       tilesData,
@@ -160,16 +174,16 @@ export function findUniqueTilesInBackground(tilesMap, tileWidth, tileHeight) {
       tileWidth,
       tileHeight
     });
-    
+
     // Handle results
-    worker.onmessage = function(e) {
+    worker.onmessage = function (e) {
       if (e.data.error) {
         reject(e.data.error);
       } else {
         // Convert back from worker format to a Map
         const uniqueTilesMap = new Map();
         const { uniqueTiles, originalToUniqueMap } = e.data;
-        
+
         // Recreate ImageData objects from arrays
         for (const uniqueKey of Object.keys(uniqueTiles)) {
           const tileData = uniqueTiles[uniqueKey];
@@ -180,10 +194,10 @@ export function findUniqueTilesInBackground(tilesMap, tileWidth, tileHeight) {
           );
           uniqueTilesMap.set(uniqueKey, imageData);
         }
-        
+
         // Terminate worker
         worker.terminate();
-        
+
         // Resolve with results
         resolve({
           uniqueTilesMap,
@@ -191,9 +205,9 @@ export function findUniqueTilesInBackground(tilesMap, tileWidth, tileHeight) {
         });
       }
     };
-    
+
     // Handle errors
-    worker.onerror = function(error) {
+    worker.onerror = function (error) {
       reject(error);
     };
   });

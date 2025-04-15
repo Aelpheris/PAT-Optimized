@@ -187,7 +187,7 @@ async function processCanvas(canvas) {
     // Step 1: Slice the canvas into tiles
     console.log('Slicing canvas into tiles...');
     console.time('Slicing Canvas');
-    const tilesMap = await tile.sliceCanvasInBackground(canvas, TILE_WIDTH, TILE_HEIGHT);
+    tilesMap = await tile.sliceCanvasInBackground(canvas, TILE_WIDTH, TILE_HEIGHT);
     console.timeEnd('Slicing Canvas');
     console.log(`Created ${tilesMap.size} tiles`);
     
@@ -200,17 +200,22 @@ async function processCanvas(canvas) {
     );    
 
     console.log(`Found ${uniqueTilesMap.size} unique tiles out of ${tilesMap.size} total tiles`);
-    
-    // Step 4: Set up click handler for tile selection
-    // setupTileSelection(canvas, tilesMap, TILE_WIDTH, TILE_HEIGHT);
-    
     console.timeEnd('Canvas Processing');
+
+    await processTiles()
+
     return { tilesMap, uniqueTilesMap, originalToUniqueMap };
     
   } catch (error) {
     console.error('Error during canvas processing:', error);
     throw error;
   }
+}
+
+// Process individual tiles to sort into types
+async function processTiles() {
+
+
 }
 
 main()

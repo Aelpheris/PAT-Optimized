@@ -42,12 +42,16 @@ function sliceImageData(imageData, canvasWidth, canvasHeight, tileWidth, tileHei
           tileData[dstIdx + 3] = imageData.data[srcIdx + 3]; // A
         }
       }
-      
+
       // Add to tiles array
       tiles.push({
         key: `${x},${y}`,
         width: actualWidth,
         height: actualHeight,
+        originX: x * tileWidth,
+        originY: y * tileHeight,
+        tileX: x,
+        tileY: y,
         data: tileData.buffer  // Send the ArrayBuffer for transfer
       });
     }

@@ -1,5 +1,5 @@
 # UI
-- [ ] Add info box to display tile attributes
+- [x] Add info box to display tile attributes
 - [ ] Add ability to drag and select multiple tiles at once
 - [ ] Add highlighting over selected tile(s)
 
@@ -10,8 +10,8 @@
 - [ ] Show radius of buildings for foundries, fishing boats, sensor towers, etc.
 - [x] Download tile images directly to disk
 - [ ] Save tile image data to disk
-- [ ] Match two tiles if they are identical
-- [ ] Match all tiles against each other and return total number of tiles
+- [x] Match two tiles if they are identical
+- [x] Match all tiles against each other and return total number of tiles
 - [ ] Tile matching based on type
   - [ ] Unexplored (black)
   - [ ] Unexplored (gray)
