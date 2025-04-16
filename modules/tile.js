@@ -1,3 +1,5 @@
+import * as ui from './ui.js'
+
 const tileSize = 14
 const TILE_WIDTH = 14
 const TILE_HEIGHT = 14
@@ -9,6 +11,9 @@ export function select(event, mapCanvas, tilesMap, tileCanvas) {
 
   // Draw selected tile to navbar canvas
   tileCtx.drawImage(mapCanvas, tileData.originX, tileData.originY, tileSize, tileSize, 0, 0, 56, 56)
+
+  // Highlight the selected tile
+  ui.highlight(mapCanvas, tileData.originX, tileData.originY, TILE_WIDTH, TILE_HEIGHT)
 
   // Enable downloading
   document.getElementById('downloadButton').disabled = false
@@ -265,4 +270,18 @@ export function matchTiles(tile1, tile2) {
 // Returns an object of the selected tile's attributes e.g. grid coordinates, tile type, etc.
 export function getAttributes(tile) {
 
+}
+
+function downloadTile() {
+  const link = document.createElement('a')
+  link.download = 'tile'
+  link.href = tileCanvas.toDataURL()
+  link.click()
+  link.remove()
+}
+
+export function updateTileAttributeBox(tileData) {
+  const text = `<p>Coordinates: (${tileData.tileX}, ${tileData.tileY})</p>`
+  const textBox = document.getElementById('attributeTextBox')
+  textBox.innerHTML = text
 }
