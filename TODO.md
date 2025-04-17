@@ -1,7 +1,7 @@
 # UI
 - [x] Add info box to display tile attributes
+- [x] Add highlighting over selected single tile
 - [ ] Add ability to drag and select multiple tiles at once
-- [ ] Add highlighting over selected tile(s)
 - [ ] Add global state to manage highlighting and grid line elements drawn over map canvas
 - [x] Add grid lines drawn as the border between tiles, with a toggle button
 
