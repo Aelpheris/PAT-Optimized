@@ -1,4 +1,5 @@
 import * as tile from './modules/tile.js'
+import * as ui from './modules/ui.js'
 
 const TILE_WIDTH = 14
 const TILE_HEIGHT = 14
@@ -8,29 +9,28 @@ let tilesMap = new Map()
 function main() {
   const mapCanvas = document.getElementById('map')
   const tileCanvas = document.getElementById('selected-tile')
+  const img = new Image();
+  img.src = './map.png';
 
-  bindEventListeners(mapCanvas, tileCanvas)
+  bindEventListeners(mapCanvas, tileCanvas, img)
 
   // Wait for DOM to be fully loaded
   document.addEventListener('DOMContentLoaded', () => {
-    initializeCanvas()
+    initializeCanvas(mapCanvas, img)
       .then(processCanvas)
       .catch(error => console.error('Error processing canvas:', error));
   });
 }
 
 // Initialize the canvas with an image
-function initializeCanvas() {
+function initializeCanvas(canvas, img) {
   return new Promise((resolve, reject) => {
-    const canvas = document.getElementById('map');
     if (!canvas) {
       reject(new Error('Canvas element not found'));
       return;
     }
 
     const ctx = canvas.getContext('2d');
-    const img = new Image();
-    img.src = './map.png';
 
     img.onload = () => {
       // Set canvas dimensions to match the image
@@ -87,8 +87,7 @@ async function processTiles() {
 
 }
 
-function bindEventListeners(mapCanvas, tileCanvas) {
-
+function bindEventListeners(mapCanvas, tileCanvas, img) {
   mapCanvas.addEventListener('click', (event) => {
     const tileData = tile.select(event, mapCanvas, tilesMap, tileCanvas)
     tile.updateTileAttributeBox(tileData)
@@ -96,6 +95,10 @@ function bindEventListeners(mapCanvas, tileCanvas) {
 
   document.getElementById('downloadButton').addEventListener('click', () => {
     tile.download(tileCanvas)
+  })
+
+  document.getElementById('grid').addEventListener('change', () => {
+    ui.toggleGrid(mapCanvas, img, TILE_WIDTH, TILE_HEIGHT)
   })
 }
 
