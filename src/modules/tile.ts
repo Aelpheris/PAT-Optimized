@@ -219,7 +219,7 @@ export function findUniqueTilesInBackground(tilesMap, tileWidth, tileHeight) {
 }
 
 export function download(canvas) {
-  const url = 'http://localhost:3000/download'
+  const url = 'http://localhost:3000/api/download'
 
   canvas.toBlob((blob) => {
     const formData = new FormData()
