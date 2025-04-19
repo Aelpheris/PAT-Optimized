@@ -1,4 +1,4 @@
-import * as ui from './ui.js'
+import * as ui from './ui'
 
 const tileSize = 14
 const TILE_WIDTH = 14
@@ -72,7 +72,7 @@ export function sliceCanvasInBackground(canvas, tileWidth, tileHeight) {
     const imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
 
     // Create worker
-    const worker = new Worker('./modules/slice-worker.js');
+    const worker = new Worker(new URL('./slice-worker.ts', import.meta.url));
 
     // Send data to worker
     worker.postMessage({
@@ -156,7 +156,7 @@ export function fromMap(event, canvas, tilesMap) {
 export function findUniqueTilesInBackground(tilesMap, tileWidth, tileHeight) {
   return new Promise((resolve, reject) => {
     // Create worker
-    const worker = new Worker('./modules/tile-worker.js');
+    const worker = new Worker(new URL('./tile-worker.ts', import.meta.url));
 
     // Prepare data to send to worker
     const tilesData = [];
@@ -219,7 +219,7 @@ export function findUniqueTilesInBackground(tilesMap, tileWidth, tileHeight) {
 }
 
 export function download(canvas) {
-  const url = 'http://localhost:3000/download'
+  const url = 'http://localhost:3000/api/download'
 
   canvas.toBlob((blob) => {
     const formData = new FormData()

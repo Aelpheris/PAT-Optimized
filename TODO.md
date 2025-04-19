@@ -31,3 +31,4 @@
 - [x] Disable tile download button until tile is selected
 - [x] Change side nav to CSS grid structure
 - [x] change frontend structure to JS modules for better file organization and structure
+- [x] Switch from JavaScript to TypeSript for easier typing with tiles and logic

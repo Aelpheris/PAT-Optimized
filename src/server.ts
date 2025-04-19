@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Request } from 'express'
 import cors from 'cors'
 import multer from 'multer'
 import path from 'path'
@@ -11,7 +11,7 @@ app.use(cors())
 app.use(express.json({ limit: '10mb' }))
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (req: Request, file, cb) => {
     const uploadDir = 'tiles/'
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true })
@@ -27,17 +27,17 @@ const storage = multer.diskStorage({
 
 const download = multer({ 
   storage: storage,
-  fileFilter: (req, file, cb) => {
+  fileFilter: (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     if (file.mimetype === 'image/png') {
       cb(null, true)
     } else {
-      cb(new Error('Only PNG images are allowed'), false)
+      cb(new Error('Only PNG images are allowed'))
     }
   },
   limits: { fileSize: 5 * 1024 * 1024 }
 })
 
-app.post('/download', download.single('image'), (req, res) => {
+app.post('/api/download', download.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded or invalid file type' })
   }

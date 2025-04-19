@@ -1,5 +1,5 @@
-import * as tile from './modules/tile.js'
-import * as ui from './modules/ui.js'
+import * as tile from './modules/tile'
+import * as ui from './modules/ui'
 
 const TILE_WIDTH = 14
 const TILE_HEIGHT = 14

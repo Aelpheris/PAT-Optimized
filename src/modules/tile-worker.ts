@@ -1,5 +1,3 @@
-// Worker script (tile-worker.js)
-
 // Handle incoming messages
 self.onmessage = function(e) {
   try {
