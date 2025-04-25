@@ -1,3 +1,5 @@
+
+
 export function redrawCanvas(canvas, img) {
   const ctx = canvas.getContext('2d')
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
@@ -7,6 +9,25 @@ export function highlight(canvas, startWidth, startHeight, endWidth, endHeight) 
   const ctx = canvas.getContext('2d')
   ctx.fillStyle = 'rgb(255 0 0 / 50%)'
   ctx.fillRect(startWidth, startHeight, endWidth, endHeight)
+}
+
+export function getTileFromMouse(
+  event: MouseEvent,
+  mapCanvas: HTMLCanvasElement,
+  tileWidth: number,
+  tileHeight: number,
+  gridWidth: number,
+  gridHeight: number
+): { row: number, col: number } {
+  const rect = mapCanvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    
+    const col = Math.floor(x / tileWidth)
+    const row = Math.floor(y / tileHeight)
+
+    return { row: Math.max(0, Math.min(row, gridHeight - 1)), 
+             col: Math.max(0, Math.min(col, gridWidth - 1)) }
 }
 
 export function toggleGrid(canvas, img, tileWidth, tileHeight) {

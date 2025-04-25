@@ -1,7 +1,7 @@
 # UI
 - [x] Add info box to display tile attributes
 - [x] Add highlighting over selected single tile
-- [ ] Add ability to drag and select multiple tiles at once
+- [x] Add ability to drag and select multiple tiles at once
 - [ ] Add global state to manage highlighting and grid line elements drawn over map canvas
 - [x] Add grid lines drawn as the border between tiles, with a toggle button
 
@@ -32,3 +32,5 @@
 - [x] Change side nav to CSS grid structure
 - [x] change frontend structure to JS modules for better file organization and structure
 - [x] Switch from JavaScript to TypeSript for easier typing with tiles and logic
+- [ ] Define 3 coordinate types in TS for Pixel, Tile, and TileFromMainSettlement
+- [ ] Create a main class in app.ts to handle global state

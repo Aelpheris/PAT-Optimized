@@ -130,6 +130,7 @@ export function sliceCanvasInBackground(canvas, tileWidth, tileHeight) {
   });
 }
 
+// Returns a single tile's data from the set of tiles from the map
 export function fromMap(event, canvas, tilesMap) {
   const rect = canvas.getBoundingClientRect()
 
