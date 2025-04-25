@@ -100,14 +100,18 @@ async function processTiles() {
 
 function drawHighlight(mapCanvas: HTMLCanvasElement, img: string): void {
   const ctx = mapCanvas.getContext('2d')
+  
   ui.redrawCanvas(mapCanvas, img)
+
+  // Draw highlighted cells
   for (const tile of selectedTiles) {
     const [row, col] = tile.split(',').map(Number)
     ui.highlight(mapCanvas, col * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT)
+
   }
 
   // If currently selecting, draw a border around the selection
-  if (isDragging && startTile && currentTile) {
+  if (isDragging && hasMoved && startTile && currentTile) {
     const startRow = Math.min(startTile.row, currentTile.row);
     const endRow = Math.max(startTile.row, currentTile.row);
     const startCol = Math.min(startTile.col, currentTile.col);
@@ -190,13 +194,13 @@ function bindEventListeners(mapCanvas, tileCanvas, img) {
         // Without shift, just select single cell
         selectedTiles.clear()
         selectedTiles.add(cellKey)
-      }
-    }
 
-    // draw single tile to navbar, or else draw entire rectangle
-    if(selectedTiles.size == 1) {
-      tile.select(e, mapCanvas, tilesMap, tileCanvas)
-    } else {
+        // Redraw selected tile to the navbar canvas
+        if (startTile) {
+          drawTileToCanvas(e, startTile, tileCanvas, tilesMap, mapCanvas)
+        }
+      }
+
       drawHighlight(mapCanvas, img)
     }
 
@@ -224,6 +228,20 @@ function updateRectangularSelection(): void {
       selectedTiles.add(`${row},${col}`);
     }
   }
+}
+
+function drawTileToCanvas(event, targetTile, tileCanvas, tilesMap, mapCanvas) {
+  const tileCtx = tileCanvas.getContext('2d')
+  // Clear the target canvas
+  tileCtx.clearRect(0, 0, tileCanvas.width, tileCanvas.height)
+
+  const tileData = tile.fromMap(event, mapCanvas, tilesMap)
+
+  // Draw selected tile to navbar canvas
+  tileCtx.drawImage(mapCanvas, tileData.originX, tileData.originY, TILE_WIDTH, TILE_HEIGHT, 0, 0, 56, 56)
+
+  // Enable downloading
+  document.getElementById('downloadButton').disabled = false
 }
 
 

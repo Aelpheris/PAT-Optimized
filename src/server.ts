@@ -12,7 +12,7 @@ app.use(express.json({ limit: '10mb' }))
 
 const storage = multer.diskStorage({
   destination: (req: Request, file, cb) => {
-    const uploadDir = 'tiles/'
+    const uploadDir = 'files/images/tiles'
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true })
     }
