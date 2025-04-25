@@ -219,12 +219,16 @@ export function findUniqueTilesInBackground(tilesMap, tileWidth, tileHeight) {
   });
 }
 
-export function download(canvas) {
+export function download(canvas: HTMLCanvasElement, filename: string): void {
   const url = 'http://localhost:3000/api/download'
+
+  if(!filename.toLowerCase().endsWith('.png')) {
+    filename = `${filename}.png`
+  }
 
   canvas.toBlob((blob) => {
     const formData = new FormData()
-    formData.append('image', blob, 'tile.png')
+    formData.append('image', blob, filename)
 
     fetch(url, {
       method: 'POST',

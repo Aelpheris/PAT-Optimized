@@ -130,14 +130,11 @@ function drawHighlight(mapCanvas: HTMLCanvasElement, img: string): void {
 
 function bindEventListeners(mapCanvas, tileCanvas, img) {
   const downloadButton = document.getElementById('downloadButton') as HTMLButtonElement
+  const filenameInput = document.getElementById('filename-input') as HTMLInputElement
 
-  // mapCanvas.addEventListener('click', (event) => {
-  //   const tileData = tile.select(event, mapCanvas, tilesMap, tileCanvas)
-  //   tile.updateTileAttributeBox(tileData)
-  // })
-
-  downloadButton.addEventListener('click', () => {
-    tile.download(tileCanvas)
+  downloadButton.addEventListener('click', (e) => {
+    e.preventDefault()
+    tile.download(tileCanvas, filenameInput.value)
   })
 
   mapCanvas.addEventListener('mousedown', (e) => {
@@ -210,6 +207,10 @@ function bindEventListeners(mapCanvas, tileCanvas, img) {
 
   document.getElementById('grid').addEventListener('change', () => {
     ui.toggleGrid(mapCanvas, img, TILE_WIDTH, TILE_HEIGHT)
+  })
+
+  filenameInput.addEventListener('input', () => {
+    downloadButton.disabled = !filenameInput.value
   })
 }
 

@@ -19,13 +19,16 @@ const storage = multer.diskStorage({
     cb(null, uploadDir)
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    const ext = path.extname(file.originalname)
-    cb(null, file.fieldname + '-' + uniqueSuffix + ext)
+    const filename = file.originalname
+    if (path.extname(filename).toLowerCase() !== '.png') {
+      cb(null, `${path.basename(filename, path.extname(filename))}.png`)
+    } else {
+      cb(null, filename)
+    }
   }
 })
 
-const download = multer({ 
+const download = multer({
   storage: storage,
   fileFilter: (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     if (file.mimetype === 'image/png') {
@@ -41,7 +44,7 @@ app.post('/api/download', download.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded or invalid file type' })
   }
-  
+
   res.json({
     message: 'File uploaded successfully',
     filePath: req.file.path,
