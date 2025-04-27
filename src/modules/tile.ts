@@ -4,6 +4,67 @@ const tileSize = 14
 const TILE_WIDTH = 14
 const TILE_HEIGHT = 14
 
+type Coordinates = { x: number, y: number }
+
+interface TileType {
+  id: number
+  name: string
+  color: string
+  attributes: Record<string, any>
+}
+
+export class TileAnalyzer {
+  private canvas: HTMLCanvasElement
+  private ctx: CanvasRenderingContext2D
+  private tilesMap: Map<string, object> = new Map()
+  private tileTypes: Map<string, TileType> = new Map()
+  private tileSize = 14
+
+  constructor(canvasElement: HTMLCanvasElement, tiles: Map<string, object>) {
+    this.canvas = canvasElement
+    this.ctx = this.canvas.getContext('2d')!
+    this.tilesMap = tiles
+    this.analyzeTiles()
+  }
+
+  private getPixelColor(x: number, y: number): string {
+    const pixel = this.ctx.getImageData(x, y, 1, 1).data
+    return `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`
+  }
+
+  private analyzeTiles(): void {
+
+    let nextTileTypeId = 0
+
+    this.tilesMap.forEach((tile, key) => {
+      // Sample the center of the tile
+      const x = tile.tileX
+      const y = tile.tileY
+      const centerX = x * this.tileSize + Math.floor(this.tileSize / 2)
+      const centerY = y * this.tileSize + Math.floor(this.tileSize / 2)
+
+      const color = this.getPixelColor(centerX, centerY)
+
+      if (!this.tileTypes.has(color)) {
+        this.tileTypes.set(color, {
+          id: nextTileTypeId++,
+          name: `Type ${nextTileTypeId}`,
+          color,
+          attributes: {}
+        })
+      }
+    })
+
+    console.log(`Found ${this.tileTypes.size} different tile types`)
+  }
+
+  private downloadUniqueTiles(): void {
+    this.tileTypes.forEach((tile, key) => {
+
+    })
+  }
+}
+
 export function select(event, mapCanvas, tilesMap, tileCanvas) {
   const tileCtx = tileCanvas.getContext('2d')
 
@@ -19,50 +80,6 @@ export function select(event, mapCanvas, tilesMap, tileCanvas) {
   document.getElementById('downloadButton').disabled = false
 
   return tileData
-}
-
-export function sliceCanvasWithMap(canvas, tileWidth, tileHeight) {
-  const ctx = canvas.getContext('2d')
-  const tilesMap = new Map()
-
-  const numTilesX = Math.ceil(canvas.width / tileWidth)
-  const numTilesY = Math.ceil(canvas.height / tileHeight)
-
-  // Slice the canvas into tiles and store in Map
-  for (let y = 0; y < numTilesY; y++) {
-    for (let x = 0; x < numTilesX; x++) {
-      // Calculate actual width and height (handle edge cases)
-      const actualWidth = Math.min(tileWidth, canvas.width - x * tileWidth)
-      const actualHeight = Math.min(tileHeight, canvas.height - y * tileHeight)
-
-      // Get image data for this tile
-      const imageData = ctx.getImageData(
-        x * tileWidth,
-        y * tileHeight,
-        actualWidth,
-        actualHeight
-      )
-
-      const data = {
-        // X coordinate of tile origin on map canvas
-        oX: x * tileWidth,
-        // Y coordinate of tile origin on map canvas
-        oY: y * tileHeight,
-        // X coordinate of tile based on tile grid
-        tileX: x,
-        // Y coordinate of tile based on tile grid
-        tileY: y,
-        imageData: imageData
-      }
-
-
-      // Store with coordinate key
-      const key = `${x},${y}`
-      tilesMap.set(key, data)
-    }
-  }
-
-  return tilesMap
 }
 
 // Function to slice canvas in the background
@@ -222,7 +239,7 @@ export function findUniqueTilesInBackground(tilesMap, tileWidth, tileHeight) {
 export function download(canvas: HTMLCanvasElement, filename: string): void {
   const url = 'http://localhost:3000/api/download'
 
-  if(!filename.toLowerCase().endsWith('.png')) {
+  if (!filename.toLowerCase().endsWith('.png')) {
     filename = `${filename}.png`
   }
 

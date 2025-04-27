@@ -32,5 +32,6 @@
 - [x] Change side nav to CSS grid structure
 - [x] change frontend structure to JS modules for better file organization and structure
 - [x] Switch from JavaScript to TypeSript for easier typing with tiles and logic
-- [ ] Define 3 coordinate types in TS for Pixel, Tile, and TileFromMainSettlement
-- [ ] Create a main class in app.ts to handle global state
+- [ ] Define 3 coordinate types in TS for Pixel, Tile, and DistanceFromMainSettlement
+- [ ] Convert main class to TS class in app.ts to handle global state
+- [ ] Convert tile.ts to Typsecript classes and types

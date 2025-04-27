@@ -15,7 +15,8 @@ let gridWidth: number
 let gridHeight: number
 
 function main() {
-  const mapCanvas = document.getElementById('map')
+  const mapCanvas = document.getElementById('map') as HTMLCanvasElement
+  mapCanvas.getContext('2d', { 'willReadFrequently': true })
   const tileCanvas = document.getElementById('selected-tile')
   const img = new Image();
   img.src = './map.png';
@@ -83,7 +84,7 @@ async function processCanvas(canvas) {
     console.log(`Found ${uniqueTilesMap.size} unique tiles out of ${tilesMap.size} total tiles`);
     console.timeEnd('Canvas Processing');
 
-    await processTiles()
+    await processTiles(canvas)
 
     return { tilesMap, uniqueTilesMap, originalToUniqueMap };
 
@@ -94,8 +95,8 @@ async function processCanvas(canvas) {
 }
 
 // Process individual tiles to sort into types
-async function processTiles() {
-
+async function processTiles(canvas: HTMLCanvasElement) {
+  const analyzer = new tile.TileAnalyzer(canvas, tilesMap)
 }
 
 function drawHighlight(mapCanvas: HTMLCanvasElement, img: string): void {
