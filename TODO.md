@@ -35,3 +35,6 @@
 - [ ] Define 3 coordinate types in TS for Pixel, Tile, and DistanceFromMainSettlement
 - [ ] Convert main class to TS class in app.ts to handle global state
 - [ ] Convert tile.ts to Typsecript classes and types
+
+# Functionality
+- [ ] Highlight all known/matched tiles after initial processing

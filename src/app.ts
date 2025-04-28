@@ -1,4 +1,5 @@
-import * as tile from './modules/tile'
+import * as Tile from './modules/Tile'
+import * as TileAnalyzer from './modules/TileAnalyzer'
 import * as ui from './modules/ui'
 
 const TILE_WIDTH = 14
@@ -69,13 +70,13 @@ async function processCanvas(canvas) {
     // Step 1: Slice the canvas into tiles
     console.log('Slicing canvas into tiles...');
     console.time('Slicing Canvas');
-    tilesMap = await tile.sliceCanvasInBackground(canvas, TILE_WIDTH, TILE_HEIGHT);
+    tilesMap = await Tile.sliceCanvasInBackground(canvas, TILE_WIDTH, TILE_HEIGHT);
     console.timeEnd('Slicing Canvas');
     console.log(`Created ${tilesMap.size} tiles`);
 
     // Step 2: Process tiles in the background to find unique ones
     console.log('Finding unique tiles in background...');
-    const { uniqueTilesMap, originalToUniqueMap } = await tile.findUniqueTilesInBackground(
+    const { uniqueTilesMap, originalToUniqueMap } = await Tile.findUniqueTilesInBackground(
       tilesMap,
       TILE_WIDTH,
       TILE_HEIGHT
@@ -96,7 +97,7 @@ async function processCanvas(canvas) {
 
 // Process individual tiles to sort into types
 async function processTiles(canvas: HTMLCanvasElement) {
-  const analyzer = new tile.TileAnalyzer(canvas, tilesMap)
+  const analyzer = new TileAnalyzer.TileAnalyzer(canvas, tilesMap)
 }
 
 function drawHighlight(mapCanvas: HTMLCanvasElement, img: string): void {
@@ -135,7 +136,7 @@ function bindEventListeners(mapCanvas, tileCanvas, img) {
 
   downloadButton.addEventListener('click', (e) => {
     e.preventDefault()
-    tile.download(tileCanvas, filenameInput.value)
+    Tile.download(tileCanvas, filenameInput.value)
   })
 
   mapCanvas.addEventListener('mousedown', (e) => {
@@ -237,10 +238,10 @@ function drawTileToCanvas(event, targetTile, tileCanvas, tilesMap, mapCanvas) {
   // Clear the target canvas
   tileCtx.clearRect(0, 0, tileCanvas.width, tileCanvas.height)
 
-  const tileData = tile.fromMap(event, mapCanvas, tilesMap)
+  const tileData = Tile.fromMap(event, mapCanvas, tilesMap)
 
   // Draw selected tile to navbar canvas
-  tileCtx.drawImage(mapCanvas, tileData.originX, tileData.originY, TILE_WIDTH, TILE_HEIGHT, 0, 0, 56, 56)
+  tileCtx.drawImage(mapCanvas, tileData.x * TILE_WIDTH, tileData.y * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT, 0, 0, 56, 56)
 
   // Enable downloading
   document.getElementById('downloadButton').disabled = false

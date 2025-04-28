@@ -48,10 +48,8 @@ function sliceImageData(imageData, canvasWidth, canvasHeight, tileWidth, tileHei
         key: `${x},${y}`,
         width: actualWidth,
         height: actualHeight,
-        originX: x * tileWidth,
-        originY: y * tileHeight,
-        tileX: x,
-        tileY: y,
+        x: x,
+        y: y,
         data: tileData.buffer  // Send the ArrayBuffer for transfer
       });
     }
