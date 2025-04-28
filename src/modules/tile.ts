@@ -10,7 +10,7 @@ interface TileType {
   id: number
   name: string
   color: string
-  attributes: Record<string, any>
+  tileCoordinates: Coordinates
 }
 
 export class TileAnalyzer {
@@ -50,7 +50,7 @@ export class TileAnalyzer {
           id: nextTileTypeId++,
           name: `Type ${nextTileTypeId}`,
           color,
-          attributes: {}
+          tileCoordinates: { x, y },
         })
       }
     })
@@ -58,10 +58,67 @@ export class TileAnalyzer {
     console.log(`Found ${this.tileTypes.size} different tile types`)
   }
 
-  private downloadUniqueTiles(): void {
-    this.tileTypes.forEach((tile, key) => {
+  private async extractTileImages(): Promise<Record<string, Blob>> {
+    // Create new canvas for extracted tile
+    const tempCanvas = document.createElement('canvas')
+    tempCanvas.width = tileSize
+    tempCanvas.height = tileSize
+    const tempCtx = tempCanvas.getContext('2d')
 
-    })
+    if (!tempCtx) {
+      return Promise.reject(new Error('Could not get canvas context'));
+    }
+
+    const results: Record<number, Blob> = {}
+
+    for (const [key, tile] of this.tileTypes) {
+      // Coordinates of the tile starting width and height in pixels on main map canvas
+      const mapX = tile.tileCoordinates.x * tileSize
+      const mapY = tile.tileCoordinates.y * tileSize
+
+      tempCtx.clearRect(0, 0, tileSize, tileSize)
+
+      tempCtx.drawImage(
+        this.canvas,
+        mapX, mapY, tileSize, tileSize, // Source tile
+        0, 0, tempCanvas.width, tempCanvas.height // Destination rectangle
+      )
+
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        tempCanvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob)
+          } else {
+            reject(new Error('Failed to create blob from canvas'))
+          }
+        }, 'image/png')
+      })
+
+      results[tile.id] = blob
+    }
+
+    return results
+  }
+
+  public async downloadUniqueTiles(): Promise<Response> {
+    try {
+      const url = 'http://localhost:3000/api/upload-multi'
+      const formData = new FormData()
+
+      const images = await this.extractTileImages()
+      for (const id in images) {
+        const blob = images[id]
+        formData.append('images', blob, `${id}.png`)
+      }
+
+      return fetch(url, {
+        method: 'post',
+        body: formData
+      })
+    } catch (error) {
+      console.error('Error uploading multiple canvas sections:', error)
+      throw error
+    }
   }
 }
 
