@@ -7,8 +7,9 @@
   // Base tile interface with common properties
   export interface BaseTileType {
     id: string
-    imageIndex: number
+    name: string
     category: TileCategory
+    imageIndex: number
   }
 
   // Unknown or unexplored tiles

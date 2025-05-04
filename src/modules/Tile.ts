@@ -1,5 +1,5 @@
 import { TileAnalyzer } from './TileAnalyzer'
-import { TileRegistry } from './TileRegistry'
+import { TileTypeRegistry } from './TileTypeRegistry'
 import * as ui from './ui' 
 
 export const tileSize = 14
@@ -9,11 +9,11 @@ const TILE_HEIGHT = 14
 
 export class TileProcessor {
   private tileAnalyzer: TileAnalyzer
-  private tileRegistry: TileRegistry
+  private tileRegistry: TileTypeRegistry
 
   constructor() {
     this.tileAnalyzer = new TileAnalyzer()
-    this.tileRegistry = new TileRegistry()
+    this.tileRegistry = new TileTypeRegistry()
   }
 }
 

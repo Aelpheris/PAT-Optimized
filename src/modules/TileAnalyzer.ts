@@ -77,7 +77,7 @@ export class TileAnalyzer {
 
     const results: Record<number, Blob> = {};
 
-    for (const [key, tile] of this.tileTypes) {
+    for (const [_, tile] of this.tileTypes) {
       // Coordinates of the tile starting width and height in pixels on main map canvas
       const mapX = tile.tileCoordinates.x * this.tileSize;
       const mapY = tile.tileCoordinates.y * this.tileSize;

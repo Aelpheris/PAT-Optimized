@@ -1,13 +1,13 @@
-import { RawTileType, TileType } from "./TileType"
+import { TileType } from "./TileType"
 
 interface TileTypeMatcher {
   id: number
   centerPixelColor?: string
-  match: (rawTile: RawTileType) => boolean
+  match: (imageData: ImageData) => boolean
   createTile: () => TileType
 }
 
-export class TileRegistry {
+export class TileTypeRegistry {
   private typeMatchers: TileTypeMatcher[] = []
 
   // Register a new tile type with its matching criteria
@@ -15,27 +15,28 @@ export class TileRegistry {
     this.typeMatchers.push(matcher)
   }
 
-  identifyTile(rawTile: RawTileType): TileType | null {
-    const matcher = this.typeMatchers.find(m => m.match(rawTile))
+  identifyTile(imageData: ImageData): TileType | null {
+    const matcher = this.typeMatchers.find(m => m.match(imageData))
     if (matcher) {
       return matcher.createTile( )
     }
     return null
   }
 
-  generateTileMap(rawMap: RawTileType[][]): TileType[][] {
+  generateTileMap(rawMap: ImageData[][]): TileType[][] {
     return rawMap.map( row =>
       row.map(tileData => this.identifyTile(tileData) || this.createUnknownTile(tileData))
     )
   }
 
   // Create default unknown tile for handling unknown tiles
-  private createUnknownTile(rawTile: RawTileType): TileType {
+  private createUnknownTile(imageData: ImageData): TileType {
     // Create basic tile with unknown type
     return {
       id: 'unknown',
       name: 'unknown',
       category: 'special',
-    }
+      imageIndex: -1
+    } as TileType
   }
 }
