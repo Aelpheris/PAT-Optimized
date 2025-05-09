@@ -21,19 +21,19 @@
   // and useful to quickly identify new tiles added to the map
   export interface UnknownTileType extends TileType {
     id: '-1'
-    name: 'unknown'
+    name: 'Unknown'
     category: 'special'
   }
 
   export interface UnexploredTileType extends TileType {
     id: '0'
-    name: 'unexplored'
+    name: 'Unexplored'
     category: 'special'
   }
 
   export interface UnrestoredTileType extends TileType {
     id: '1'
-    name: 'unrestored'
+    name: 'Unrestored'
     category: 'special'
   }
 

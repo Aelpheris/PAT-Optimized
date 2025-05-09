@@ -1,7 +1,7 @@
 import { TileType } from "./TileType"
 
 interface TileTypeMatcher {
-  id: number
+  id: string
   centerPixelColor?: string
   match: (imageData: ImageData) => boolean
   createTile: () => TileType
@@ -30,7 +30,7 @@ export class TileTypeRegistry {
   }
 
   // Create default unknown tile for handling unknown tiles
-  private createUnknownTile(imageData: ImageData): TileType {
+  private createUnknownTile(_: ImageData): TileType {
     // Create basic tile with unknown type
     return {
       id: 'unknown',

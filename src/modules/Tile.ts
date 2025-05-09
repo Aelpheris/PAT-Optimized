@@ -1,21 +1,8 @@
-import { TileAnalyzer } from './TileAnalyzer'
-import { TileTypeRegistry } from './TileTypeRegistry'
 import * as ui from './ui' 
 
 export const tileSize = 14
 const TILE_WIDTH = 14
 const TILE_HEIGHT = 14
-
-
-export class TileProcessor {
-  private tileAnalyzer: TileAnalyzer
-  private tileRegistry: TileTypeRegistry
-
-  constructor() {
-    this.tileAnalyzer = new TileAnalyzer()
-    this.tileRegistry = new TileTypeRegistry()
-  }
-}
 
 export function select(event, mapCanvas, tilesMap, tileCanvas) {
   const tileCtx = tileCanvas.getContext('2d')

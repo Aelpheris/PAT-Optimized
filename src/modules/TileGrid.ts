@@ -1,15 +1,17 @@
 import { TileType, UnknownTileType } from "./TileType";
 
 
-/*
-This is an efficient coordinate-based mapping of tiles from the image grid.
-It is used to assign each tile in the grid a tile type, and able to reference
-individual tiles by their coordinates from the view of the tile grid.
+/**
+ * This is an efficient coordinate-based mapping of tiles from the image grid.
+ * It is used to assign each tile in the grid a tile type, and able to reference
+ * individual tiles by their coordinates from the view of the tile grid.
+ * - Uses Map for O(1) lookups
+ * - Has convenient helper methods for working with coordinates
 */
 export class TileGrid {
   private tiles = new Map<string, TileType>()
-  private readonly width: number
-  private readonly height: number
+  readonly width: number
+  readonly height: number
 
   constructor(width: number, height: number) {
     this.width = width
@@ -32,7 +34,7 @@ export class TileGrid {
     return this.tiles.get(this.key(x, y)) || {} as UnknownTileType
   }
 
-  public setTile(x: number, y: number, tile: TileType): void {
+  public setTile(x: number, y: number, tile: TileType = {} as UnknownTileType): void {
     if (!this.isValidCoordinate(x, y)) {
       throw new Error(`Coordinates out of bounds: ${x},${y}`)
     }

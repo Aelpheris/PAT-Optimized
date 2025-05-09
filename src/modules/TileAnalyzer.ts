@@ -1,3 +1,4 @@
+import { TileGrid } from './TileGrid';
 import * as ui from './ui';
 
 
@@ -14,12 +15,16 @@ export class TileAnalyzer {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private tileTypes: Map<string, PixelTileType> = new Map();
-  private tileGrid: number[][] = []
-  private tileSize = 14;
+  private tileGrid: TileGrid
+  private readonly tileSize = 14;
 
   constructor(canvasElement: HTMLCanvasElement) {
     this.canvas = canvasElement;
     this.ctx = this.canvas.getContext('2d')!;
+    const width = Math.floor(this.canvas.width / this.tileSize)
+    const height = Math.floor(this.canvas.height / this.tileSize)
+    this.tileGrid = new TileGrid(width, height)
+
     this.analyzeTiles();
   }
 
@@ -28,18 +33,12 @@ export class TileAnalyzer {
     return `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
   }
 
-  private analyzeTiles(): void {
-
-    const width = Math.floor(this.canvas.width / this.tileSize)
-    const height = Math.floor(this.canvas.height / this.tileSize)
-
-    // Initialize the grid
-    this.tileGrid = Array(height).fill(0).map(() => Array(width).fill(-1))
+  public analyzeTiles(): TileGrid {
 
     let nextTileTypeId = 0
 
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
+    for (let y = 0; y < this.tileGrid.height; y++) {
+      for (let x = 0; x < this.tileGrid.width; x++) {
         const centerX = x * this.tileSize + Math.floor(this.tileSize / 2)
         const centerY = y * this.tileSize + Math.floor(this.tileSize / 2)
 
@@ -57,11 +56,12 @@ export class TileAnalyzer {
         }
 
         // Store the tile type ID in our grid
-        this.tileGrid[y][x] = this.tileTypes.get(color)!.id
+        this.tileGrid.setTile(x, y)
       }
     }
 
     console.log(`Found ${this.tileTypes.size} different tile types`);
+    return this.tileGrid
   }
 
   private async extractTileImages(): Promise<Record<string, Blob>> {
