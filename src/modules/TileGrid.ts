@@ -1,4 +1,4 @@
-import { TileType, UnknownTileType } from "./TileType";
+import { Tile, UnknownTileType } from "./TileType";
 
 
 /**
@@ -9,32 +9,49 @@ import { TileType, UnknownTileType } from "./TileType";
  * - Has convenient helper methods for working with coordinates
 */
 export class TileGrid {
-  private tiles = new Map<string, TileType>()
+  private tiles = new Map<string, Tile>()
   readonly width: number
   readonly height: number
+  private readonly defaultTile: Tile<UnknownTileType>
 
-  constructor(width: number, height: number) {
+  constructor(
+    width: number,
+    height: number,
+    defaultTile: Tile<UnknownTileType> = {
+      type: {
+        id: '-1',
+        name: 'Unknown',
+        category: 'special',
+        imageIndex: -1
+      }
+    }
+  ) {
     this.width = width
     this.height = height
+    this.defaultTile = defaultTile
   }
 
   private key(x: number, y: number): string {
     return `${x},${y}`
   }
 
+  public size(): number {
+    return this.tiles.size
+  }
+
   public isValidCoordinate(x: number, y: number): boolean {
     return x >= 0 && x < this.width && y >= 0 && y < this.height;
   }
 
-  public getTile(x: number, y: number): TileType {
+  public getTile(x: number, y: number): Tile {
     if (!this.isValidCoordinate(x, y)) {
       throw new Error(`Coordinates out of bounds: ${x},${y}`)
     }
 
-    return this.tiles.get(this.key(x, y)) || {} as UnknownTileType
+    return this.tiles.get(this.key(x, y)) || { ...this.defaultTile }
   }
 
-  public setTile(x: number, y: number, tile: TileType = {} as UnknownTileType): void {
+  public setTile(x: number, y: number, tile: Tile): void {
     if (!this.isValidCoordinate(x, y)) {
       throw new Error(`Coordinates out of bounds: ${x},${y}`)
     }
@@ -45,7 +62,7 @@ export class TileGrid {
   /**
  * Get neighbors of a tile
  */
-  getNeighbors(x: number, y: number): Array<{ x: number, y: number, tile: TileType }> {
+  getNeighbors(x: number, y: number): Array<{ x: number, y: number, tile: Tile }> {
     const directions = [
       { dx: -1, dy: 0 }, // left
       { dx: 1, dy: 0 },  // right
@@ -57,5 +74,16 @@ export class TileGrid {
       .map(dir => ({ x: x + dir.dx, y: y + dir.dy }))
       .filter(pos => this.isValidCoordinate(pos.x, pos.y))
       .map(pos => ({ x: pos.x, y: pos.y, tile: this.getTile(pos.x, pos.y) }));
+  }
+
+  getAllNonDefaultTiles(): Array<{ x: number, y: number, tile: Tile}> {
+    const result: Array<{ x: number, y: number, tile: Tile }> = []
+
+    for (const [key, tile] of this.tiles.entries()) {
+      const [x, y] = key.split(',').map(Number)
+      result.push({ x, y, tile })
+    }
+
+    return result
   }
 }

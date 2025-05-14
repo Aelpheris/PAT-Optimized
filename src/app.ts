@@ -1,11 +1,13 @@
+import { MapProcessor } from './modules/MapProcessor'
 import * as Tile from './modules/Tile'
-import * as TileAnalyzer from './modules/TileAnalyzer'
+import { TileGrid } from './modules/TileGrid'
 import * as ui from './modules/ui'
 
 const TILE_WIDTH = 14
 const TILE_HEIGHT = 14
 
 let tilesMap: Map<string, object> = new Map()
+let tileGrid: TileGrid
 
 let isDragging: boolean = false
 let hasMoved: boolean = false
@@ -15,12 +17,47 @@ let currentTile: { row: number, col: number } | null
 let gridWidth: number
 let gridHeight: number
 
+class app {
+  // Canvas
+  private mapCanvas: HTMLCanvasElement
+  private mapCtx: CanvasRenderingContext2D
+  private tileCanvas: HTMLCanvasElement
+
+  // UI
+  private isDragging: boolean = false
+  private hasMoved: boolean = false
+
+  // Tile
+  private selectedTiles: Set<string> = new Set()
+  private startTile: { row: number, col: number } | null = null
+  private currentTile: { row: number, col: number } | null = null
+
+  // Tile Grid
+  private readonly tileSize: number = 14
+  private gridWidth: number
+  private gridHeight: number
+
+  constructor() {
+    this.mapCanvas = document.getElementById('map') as HTMLCanvasElement
+    this.mapCtx = this.mapCanvas.getContext('2d', { 'willReadFrequently': true })!
+    this.tileCanvas = document.getElementById('selected-tile') as HTMLCanvasElement
+
+    this.gridWidth = this.mapCanvas.width / this.tileSize
+    this.gridHeight = this.mapCanvas.height / this.tileSize
+  }
+}
+
 function main() {
   const mapCanvas = document.getElementById('map') as HTMLCanvasElement
   mapCanvas.getContext('2d', { 'willReadFrequently': true })
   const tileCanvas = document.getElementById('selected-tile')
   const img = new Image();
   img.src = './map.png';
+
+  const width = mapCanvas.width / TILE_WIDTH
+  const height = mapCanvas.height / TILE_WIDTH
+
+  tileGrid = new TileGrid(width, height)
 
   bindEventListeners(mapCanvas, tileCanvas, img)
 
@@ -70,24 +107,24 @@ async function processCanvas(canvas) {
     // Step 1: Slice the canvas into tiles
     console.log('Slicing canvas into tiles...');
     console.time('Slicing Canvas');
-    tilesMap = await Tile.sliceCanvasInBackground(canvas, TILE_WIDTH, TILE_HEIGHT);
+    // tilesMap = await Tile.sliceCanvasInBackground(canvas, TILE_WIDTH, TILE_HEIGHT);
     console.timeEnd('Slicing Canvas');
     console.log(`Created ${tilesMap.size} tiles`);
 
     // Step 2: Process tiles in the background to find unique ones
     console.log('Finding unique tiles in background...');
-    const { uniqueTilesMap, originalToUniqueMap } = await Tile.findUniqueTilesInBackground(
-      tilesMap,
-      TILE_WIDTH,
-      TILE_HEIGHT
-    );
+    // const { uniqueTilesMap, originalToUniqueMap } = await Tile.findUniqueTilesInBackground(
+    //   tilesMap,
+    //   TILE_WIDTH,
+    //   TILE_HEIGHT
+    // );
 
-    console.log(`Found ${uniqueTilesMap.size} unique tiles out of ${tilesMap.size} total tiles`);
+    // console.log(`Found ${uniqueTilesMap.size} unique tiles out of ${tilesMap.size} total tiles`);
     console.timeEnd('Canvas Processing');
 
-    await processTiles(canvas)
+    processTiles(canvas)
 
-    return { tilesMap, uniqueTilesMap, originalToUniqueMap };
+    // return { tilesMap, uniqueTilesMap, originalToUniqueMap };
 
   } catch (error) {
     console.error('Error during canvas processing:', error);
@@ -96,13 +133,14 @@ async function processCanvas(canvas) {
 }
 
 // Process individual tiles to sort into types
-async function processTiles(canvas: HTMLCanvasElement) {
-  const analyzer = new TileAnalyzer.TileAnalyzer(canvas, tilesMap)
+function processTiles(canvas: HTMLCanvasElement) {
+  const mapProcessor = new MapProcessor()
+  mapProcessor.processMap(canvas, tileGrid)
 }
 
 function drawHighlight(mapCanvas: HTMLCanvasElement, img: string): void {
   const ctx = mapCanvas.getContext('2d')
-  
+
   ui.redrawCanvas(mapCanvas, img)
 
   // Draw highlighted cells

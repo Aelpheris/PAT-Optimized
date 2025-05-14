@@ -28,12 +28,12 @@ export class TileAnalyzer {
     this.analyzeTiles();
   }
 
-  private getPixelColor(x: number, y: number): string {
+  getPixelColor(x: number, y: number): string {
     const pixel = this.ctx.getImageData(x, y, 1, 1).data;
     return `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
   }
 
-  public analyzeTiles(): TileGrid {
+  analyzeTiles(): TileGrid {
 
     let nextTileTypeId = 0
 
