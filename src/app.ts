@@ -22,6 +22,7 @@ class app {
   private mapCanvas: HTMLCanvasElement
   private mapCtx: CanvasRenderingContext2D
   private tileCanvas: HTMLCanvasElement
+  private img: HTMLImageElement = new Image()
 
   // UI
   private isDragging: boolean = false
@@ -34,16 +35,21 @@ class app {
 
   // Tile Grid
   private readonly tileSize: number = 14
-  private gridWidth: number
-  private gridHeight: number
+  private tileGrid: TileGrid
 
   constructor() {
     this.mapCanvas = document.getElementById('map') as HTMLCanvasElement
     this.mapCtx = this.mapCanvas.getContext('2d', { 'willReadFrequently': true })!
     this.tileCanvas = document.getElementById('selected-tile') as HTMLCanvasElement
+    this.img.src = './map.png'
 
-    this.gridWidth = this.mapCanvas.width / this.tileSize
-    this.gridHeight = this.mapCanvas.height / this.tileSize
+    const gridWidth = this.mapCanvas.width / this.tileSize
+    const gridHeight = this.mapCanvas.height / this.tileSize
+    this.tileGrid = new TileGrid(gridWidth, gridHeight)
+  }
+
+  main(): void {
+
   }
 }
 
@@ -139,7 +145,7 @@ function processTiles(canvas: HTMLCanvasElement) {
 }
 
 function drawHighlight(mapCanvas: HTMLCanvasElement, img: string): void {
-  const ctx = mapCanvas.getContext('2d')
+  const ctx = mapCanvas.getContext('2d')!
 
   ui.redrawCanvas(mapCanvas, img)
 
@@ -244,6 +250,8 @@ function bindEventListeners(mapCanvas, tileCanvas, img) {
     isDragging = false
     hasMoved = false
   })
+
+  const grid = document.getElementById('grid')
 
   document.getElementById('grid').addEventListener('change', () => {
     ui.toggleGrid(mapCanvas, img, TILE_WIDTH, TILE_HEIGHT)
