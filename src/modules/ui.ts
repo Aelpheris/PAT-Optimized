@@ -14,8 +14,7 @@ export function highlight(canvas, startWidth, startHeight, endWidth, endHeight) 
 export function getTileFromMouse(
   event: MouseEvent,
   mapCanvas: HTMLCanvasElement,
-  tileWidth: number,
-  tileHeight: number,
+  tileSize: number,
   gridWidth: number,
   gridHeight: number
 ): { row: number, col: number } {
@@ -23,8 +22,8 @@ export function getTileFromMouse(
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
     
-    const col = Math.floor(x / tileWidth)
-    const row = Math.floor(y / tileHeight)
+    const col = Math.floor(x / tileSize)
+    const row = Math.floor(y / tileSize)
 
     return { row: Math.max(0, Math.min(row, gridHeight - 1)), 
              col: Math.max(0, Math.min(col, gridWidth - 1)) }

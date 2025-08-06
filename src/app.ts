@@ -3,11 +3,11 @@ import * as Tile from './modules/Tile'
 import { TileGrid } from './modules/TileGrid'
 import * as ui from './modules/ui'
 
-const TILE_WIDTH = 14
-const TILE_HEIGHT = 14
+const TILE_WIDTH = 12
+const TILE_HEIGHT = 12
+const tileSize = 12
 
 let tilesMap: Map<string, object> = new Map()
-let tileGrid: TileGrid
 
 let isDragging: boolean = false
 let hasMoved: boolean = false
@@ -34,7 +34,7 @@ class App {
   private currentTile: { row: number, col: number } | null = null
 
   // Tile Grid
-  private readonly tileSize: number = 14
+  private readonly tileSize: number = 12
   private tileGrid: TileGrid
 
   constructor() {
@@ -50,97 +50,159 @@ class App {
 
   main(): void {
 
-    bindEventListeners(this.mapCanvas, this.tileCanvas, this.img)
+    this.bindEventListeners(this.mapCanvas, this.tileCanvas, this.img)
 
     // Wait for DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', () => {
-      initializeCanvas(this.mapCanvas, this.mapCtx, this.img)
-        .then(processCanvas)
-        .then(() => processTiles(this.mapCanvas, this.tileGrid))
+      this.initializeCanvas(this.mapCanvas, this.img, this.tileSize)
+        .then(() => this.processTiles(this.mapCanvas, this.tileGrid))
         .catch(error => console.error('Error processing canvas:', error));
     })
   }
 
-  async initialize(): Promise<void> {
+  drawTileToCanvas(event: MouseEvent, mapCanvas: HTMLCanvasElement, tileCanvas: HTMLCanvasElement, tileSize: number) {
+    const tileCtx = tileCanvas.getContext('2d')!
+    // Clear the target canvas
+    tileCtx.clearRect(0, 0, tileCanvas.width, tileCanvas.height)
 
-    // Wait for DOM to be fully loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      initializeCanvas(this.mapCanvas, this.mapCtx, this.img)
-        .then(processCanvas)
-        .then(() => processTiles(this.mapCanvas, this.tileGrid))
-        .catch(error => console.error('Error processing canvas:', error));
-    })
+    const tile = ui.getTileFromMouse(event, mapCanvas, tileSize, gridWidth, gridHeight)
+
+    // Draw selected tile to navbar canvas
+    tileCtx.drawImage(mapCanvas, tile.row * tileSize, tile.col * tileSize, tileSize, tileSize, 0, 0, 56, 56)
+
+    // Enable downloading
+    const downloadButton = document.getElementById('downloadButton') as HTMLButtonElement
+    downloadButton.disabled = false
   }
-}
 
+  // Initialize the canvas with an image
+  private async initializeCanvas(canvas: HTMLCanvasElement, img: HTMLImageElement, tileSize: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!canvas) {
+        reject(new Error('Canvas element not found'));
+        return;
+      }
 
-// Initialize the canvas with an image
-async function initializeCanvas(canvas, canvasCtx, img): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (!canvas) {
-      reject(new Error('Canvas element not found'));
-      return;
+      const canvasCtx = canvas.getContext('2d')!
+
+      img.onload = () => {
+        // Set canvas dimensions to match the image
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        gridWidth = canvas.width / tileSize
+        gridHeight = canvas.height / tileSize
+
+        // Draw the image on the canvas
+        canvasCtx.drawImage(img, 0, 0);
+
+        console.log('Canvas initialized with dimensions:', canvas.width, 'x', canvas.height);
+        resolve();
+      };
+
+      this.img.onerror = () => {
+        reject(new Error('Failed to load the image'));
+      };
+    });
+  }
+
+  // Process individual tiles to sort into types
+  private async processTiles(canvas: HTMLCanvasElement, tileGrid): Promise<void> {
+    try {
+      const mapProcessor = new MapProcessor()
+      mapProcessor.processMap(canvas, tileGrid)
+    } catch (error) {
+      console.error('Error processing tiles:', error)
+      throw error
     }
-
-    img.onload = () => {
-      // Set canvas dimensions to match the image
-      canvas.width = img.width;
-      canvas.height = img.height;
-
-      gridWidth = canvas.width / TILE_WIDTH
-      gridHeight = canvas.height / TILE_HEIGHT
-
-      // Draw the image on the canvas
-      canvasCtx.drawImage(img, 0, 0);
-
-      console.log('Canvas initialized with dimensions:', canvas.width, 'x', canvas.height);
-      resolve(canvas);
-    };
-
-    img.onerror = () => {
-      reject(new Error('Failed to load the image'));
-    };
-  });
-}
-
-// Process the canvas - main processing function
-async function processCanvas(canvas) {
-  try {
-    console.time('Canvas Processing');
-    // Step 1: Slice the canvas into tiles
-    console.log('Slicing canvas into tiles...');
-    console.time('Slicing Canvas');
-    // tilesMap = await Tile.sliceCanvasInBackground(canvas, TILE_WIDTH, TILE_HEIGHT);
-    console.timeEnd('Slicing Canvas');
-    console.log(`Created ${tilesMap.size} tiles`);
-
-    // Step 2: Process tiles in the background to find unique ones
-    console.log('Finding unique tiles in background...');
-    // const { uniqueTilesMap, originalToUniqueMap } = await Tile.findUniqueTilesInBackground(
-    //   tilesMap,
-    //   TILE_WIDTH,
-    //   TILE_HEIGHT
-    // );
-
-    // console.log(`Found ${uniqueTilesMap.size} unique tiles out of ${tilesMap.size} total tiles`);
-    console.timeEnd('Canvas Processing');
-
-    // return { tilesMap, uniqueTilesMap, originalToUniqueMap };
-
-  } catch (error) {
-    console.error('Error during canvas processing:', error);
-    throw error;
   }
-}
 
-// Process individual tiles to sort into types
-async function processTiles(canvas: HTMLCanvasElement, tileGrid): Promise<void> {
-  try {
-    const mapProcessor = new MapProcessor()
-    mapProcessor.processMap(canvas, tileGrid)
-  } catch (error) {
-    console.error('Error processing tiles:', error)
-    throw error
+  bindEventListeners(mapCanvas, tileCanvas, img) {
+    const downloadButton = document.getElementById('downloadButton') as HTMLButtonElement
+    const filenameInput = document.getElementById('filename-input') as HTMLInputElement
+
+    downloadButton.addEventListener('click', (e) => {
+      e.preventDefault()
+      Tile.download(tileCanvas, filenameInput.value)
+    })
+
+    mapCanvas.addEventListener('mousedown', (e) => {
+      isDragging = true
+      hasMoved = false
+
+      startTile = ui.getTileFromMouse(e, mapCanvas, tileSize, gridWidth, gridHeight)
+      currentTile = startTile
+
+      if (!e.shiftKey) {
+        selectedTiles.clear()
+      }
+
+      // We don't immediately select the cell here
+      // Selection happens either on mouse move (rectangle) or mouse up (single cell)
+      drawHighlight(mapCanvas, img)
+    })
+
+    mapCanvas.addEventListener('mousemove', (e) => {
+      if (!isDragging || !startTile) return
+
+      const newTile = ui.getTileFromMouse(e, mapCanvas, tileSize, gridWidth, gridHeight)
+
+      // Only update if the current cell has changed
+      if (!currentTile ||
+        newTile.row !== currentTile.row ||
+        newTile.col !== currentTile.col) {
+
+        hasMoved = true
+        currentTile = newTile
+
+        // Calculate new selection for rectangle drag
+        if (!e.shiftKey) {
+          selectedTiles.clear()
+        }
+        updateRectangularSelection()
+        drawHighlight(mapCanvas, img)
+      }
+    })
+
+    mapCanvas.addEventListener('mouseup', (e) => {
+      if (isDragging && !hasMoved && startTile) {
+        // If we haven't moved, it's a single cell click
+        const cellKey = `${startTile.row},${startTile.col}`
+
+        // For single click with shift key, toggle the cell's selection state
+        if (e.shiftKey) {
+          if (selectedTiles.has(cellKey)) {
+            selectedTiles.delete(cellKey)
+          } else {
+            selectedTiles.add(cellKey)
+          }
+        } else {
+          // Without shift, just select single cell
+          selectedTiles.clear()
+          selectedTiles.add(cellKey)
+
+          // Redraw selected tile to the navbar canvas
+          if (startTile) {
+            this.drawTileToCanvas(e, mapCanvas, tileCanvas, tileSize)
+          }
+        }
+
+        drawHighlight(mapCanvas, img)
+      }
+
+      isDragging = false
+      hasMoved = false
+    })
+
+    const grid = document.getElementById('grid')!
+
+    grid.addEventListener('change', () => {
+      ui.toggleGrid(mapCanvas, img, TILE_WIDTH, TILE_HEIGHT)
+    })
+
+    filenameInput.addEventListener('input', () => {
+      downloadButton.disabled = !filenameInput.value
+    })
   }
 }
 
@@ -174,93 +236,6 @@ function drawHighlight(mapCanvas: HTMLCanvasElement, img: string): void {
   }
 }
 
-function bindEventListeners(mapCanvas, tileCanvas, img) {
-  const downloadButton = document.getElementById('downloadButton') as HTMLButtonElement
-  const filenameInput = document.getElementById('filename-input') as HTMLInputElement
-
-  downloadButton.addEventListener('click', (e) => {
-    e.preventDefault()
-    Tile.download(tileCanvas, filenameInput.value)
-  })
-
-  mapCanvas.addEventListener('mousedown', (e) => {
-    isDragging = true
-    hasMoved = false
-
-    startTile = ui.getTileFromMouse(e, mapCanvas, TILE_WIDTH, TILE_HEIGHT, gridWidth, gridHeight)
-    currentTile = startTile
-
-    if (!e.shiftKey) {
-      selectedTiles.clear()
-    }
-
-    // We don't immediately select the cell here
-    // Selection happens either on mouse move (rectangle) or mouse up (single cell)
-    drawHighlight(mapCanvas, img)
-  })
-
-  mapCanvas.addEventListener('mousemove', (e) => {
-    if (!isDragging || !startTile) return
-
-    const newTile = ui.getTileFromMouse(e, mapCanvas, TILE_WIDTH, TILE_HEIGHT, gridWidth, gridHeight)
-
-    // Only update if the current cell has changed
-    if (!currentTile ||
-      newTile.row !== currentTile.row ||
-      newTile.col !== currentTile.col) {
-
-      hasMoved = true
-      currentTile = newTile
-
-      // Calculate new selection for rectangle drag
-      if (!e.shiftKey) {
-        selectedTiles.clear()
-      }
-      updateRectangularSelection()
-      drawHighlight(mapCanvas, img)
-    }
-  })
-
-  mapCanvas.addEventListener('mouseup', (e) => {
-    if (isDragging && !hasMoved && startTile) {
-      // If we haven't moved, it's a single cell click
-      const cellKey = `${startTile.row},${startTile.col}`
-
-      // For single click with shift key, toggle the cell's selection state
-      if (e.shiftKey) {
-        if (selectedTiles.has(cellKey)) {
-          selectedTiles.delete(cellKey)
-        } else {
-          selectedTiles.add(cellKey)
-        }
-      } else {
-        // Without shift, just select single cell
-        selectedTiles.clear()
-        selectedTiles.add(cellKey)
-
-        // Redraw selected tile to the navbar canvas
-        if (startTile) {
-          drawTileToCanvas(e, startTile, tileCanvas, tilesMap, mapCanvas)
-        }
-      }
-
-      drawHighlight(mapCanvas, img)
-    }
-
-    isDragging = false
-    hasMoved = false
-  })
-
-  const grid = document.getElementById('grid')
-
-  document.getElementById('grid').addEventListener('change', () => {
-    ui.toggleGrid(mapCanvas, img, TILE_WIDTH, TILE_HEIGHT)
-  })
-
-  filenameInput.addEventListener('input', () => {
-    downloadButton.disabled = !filenameInput.value
-  })
-}
 
 function updateRectangularSelection(): void {
   if (!startTile || !currentTile) return;
@@ -279,19 +254,6 @@ function updateRectangularSelection(): void {
   }
 }
 
-function drawTileToCanvas(event, targetTile, tileCanvas, tilesMap, mapCanvas) {
-  const tileCtx = tileCanvas.getContext('2d')
-  // Clear the target canvas
-  tileCtx.clearRect(0, 0, tileCanvas.width, tileCanvas.height)
-
-  const tileData = Tile.fromMap(event, mapCanvas, tilesMap)
-
-  // Draw selected tile to navbar canvas
-  tileCtx.drawImage(mapCanvas, tileData.x * TILE_WIDTH, tileData.y * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT, 0, 0, 56, 56)
-
-  // Enable downloading
-  document.getElementById('downloadButton').disabled = false
-}
 
 const app = new App()
 app.main()
