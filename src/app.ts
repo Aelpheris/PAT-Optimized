@@ -17,7 +17,7 @@ let currentTile: { row: number, col: number } | null
 let gridWidth: number
 let gridHeight: number
 
-class app {
+class App {
   // Canvas
   private mapCanvas: HTMLCanvasElement
   private mapCtx: CanvasRenderingContext2D
@@ -41,7 +41,7 @@ class app {
     this.mapCanvas = document.getElementById('map') as HTMLCanvasElement
     this.mapCtx = this.mapCanvas.getContext('2d', { 'willReadFrequently': true })!
     this.tileCanvas = document.getElementById('selected-tile') as HTMLCanvasElement
-    this.img.src = './map.png'
+    this.img.src = './map.jpg'
 
     const gridWidth = this.mapCanvas.width / this.tileSize
     const gridHeight = this.mapCanvas.height / this.tileSize
@@ -50,40 +50,37 @@ class app {
 
   main(): void {
 
+    bindEventListeners(this.mapCanvas, this.tileCanvas, this.img)
+
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeCanvas(this.mapCanvas, this.mapCtx, this.img)
+        .then(processCanvas)
+        .then(() => processTiles(this.mapCanvas, this.tileGrid))
+        .catch(error => console.error('Error processing canvas:', error));
+    })
+  }
+
+  async initialize(): Promise<void> {
+
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeCanvas(this.mapCanvas, this.mapCtx, this.img)
+        .then(processCanvas)
+        .then(() => processTiles(this.mapCanvas, this.tileGrid))
+        .catch(error => console.error('Error processing canvas:', error));
+    })
   }
 }
 
-function main() {
-  const mapCanvas = document.getElementById('map') as HTMLCanvasElement
-  mapCanvas.getContext('2d', { 'willReadFrequently': true })
-  const tileCanvas = document.getElementById('selected-tile')
-  const img = new Image();
-  img.src = './map.png';
-
-  const width = mapCanvas.width / TILE_WIDTH
-  const height = mapCanvas.height / TILE_WIDTH
-
-  tileGrid = new TileGrid(width, height)
-
-  bindEventListeners(mapCanvas, tileCanvas, img)
-
-  // Wait for DOM to be fully loaded
-  document.addEventListener('DOMContentLoaded', () => {
-    initializeCanvas(mapCanvas, img)
-      .then(processCanvas)
-      .catch(error => console.error('Error processing canvas:', error));
-  });
-}
 
 // Initialize the canvas with an image
-function initializeCanvas(canvas, img) {
+async function initializeCanvas(canvas, canvasCtx, img): Promise<void> {
   return new Promise((resolve, reject) => {
     if (!canvas) {
       reject(new Error('Canvas element not found'));
       return;
     }
-
-    const ctx = canvas.getContext('2d');
 
     img.onload = () => {
       // Set canvas dimensions to match the image
@@ -94,7 +91,7 @@ function initializeCanvas(canvas, img) {
       gridHeight = canvas.height / TILE_HEIGHT
 
       // Draw the image on the canvas
-      ctx.drawImage(img, 0, 0);
+      canvasCtx.drawImage(img, 0, 0);
 
       console.log('Canvas initialized with dimensions:', canvas.width, 'x', canvas.height);
       resolve(canvas);
@@ -128,8 +125,6 @@ async function processCanvas(canvas) {
     // console.log(`Found ${uniqueTilesMap.size} unique tiles out of ${tilesMap.size} total tiles`);
     console.timeEnd('Canvas Processing');
 
-    processTiles(canvas)
-
     // return { tilesMap, uniqueTilesMap, originalToUniqueMap };
 
   } catch (error) {
@@ -139,9 +134,14 @@ async function processCanvas(canvas) {
 }
 
 // Process individual tiles to sort into types
-function processTiles(canvas: HTMLCanvasElement) {
-  const mapProcessor = new MapProcessor()
-  mapProcessor.processMap(canvas, tileGrid)
+async function processTiles(canvas: HTMLCanvasElement, tileGrid): Promise<void> {
+  try {
+    const mapProcessor = new MapProcessor()
+    mapProcessor.processMap(canvas, tileGrid)
+  } catch (error) {
+    console.error('Error processing tiles:', error)
+    throw error
+  }
 }
 
 function drawHighlight(mapCanvas: HTMLCanvasElement, img: string): void {
@@ -293,5 +293,5 @@ function drawTileToCanvas(event, targetTile, tileCanvas, tilesMap, mapCanvas) {
   document.getElementById('downloadButton').disabled = false
 }
 
-
-main()
+const app = new App()
+app.main()
