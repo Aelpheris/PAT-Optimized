@@ -25,6 +25,8 @@ class Server {
 
     router.post('/upload', upload.single('image'), uploadImage)
     router.post('/upload-multi', upload.array('images'), uploadImages)
+
+    this.express.use('/', router)
   }
 }
 

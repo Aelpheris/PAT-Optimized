@@ -9,7 +9,8 @@ export const uploadImage = async (req: Request, res: Response) => {
   res.json({
     message: 'File uploaded successfully',
     filePath: req.file.path,
-    filename: req.file.filename
+    filename: req.file.filename,
+    size: req.file.size
   })
 }
 

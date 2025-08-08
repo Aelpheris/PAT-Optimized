@@ -2,6 +2,7 @@ import { MapProcessor } from './modules/MapProcessor'
 import * as Tile from './modules/Tile'
 import { TileGrid } from './modules/TileGrid'
 import * as ui from './modules/ui'
+import { API } from './modules/api'
 
 const TILE_WIDTH = 14
 const TILE_HEIGHT = 14
@@ -35,21 +36,28 @@ class App {
   private readonly tileSize: number = 14
   private tileGrid: TileGrid
 
+  // API
+  private api: API
+
   constructor() {
     this.mapCanvas = document.getElementById('map') as HTMLCanvasElement
     this.mapCtx = this.mapCanvas.getContext('2d', { 'willReadFrequently': true })!
     this.tileCanvas = document.getElementById('selected-tile') as HTMLCanvasElement
     this.img.src = './myMap_1754504152734.png'
+    this.api = new API('http://localhost:3000')
 
     this.bindEventListeners(this.mapCanvas, this.tileCanvas, this.img)
 
     // Wait for DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', () => {
       this.initializeCanvas(this.mapCanvas, this.img, this.tileSize)
-      .then(() => {
-        this.tileGrid = this.createGrid(this.mapCanvas.width, this.mapCanvas.height, this.tileSize)
-      })
-        .then(() => this.processTiles(this.mapCanvas, this.tileGrid))
+        .then(() => {
+          this.tileGrid = this.createGrid(this.mapCanvas.width, this.mapCanvas.height, this.tileSize)
+        })
+        .then(() => {
+          this.api.uploadImage(this.mapCanvas, 'map.png')
+        })
+        // .then(() => this.processTiles(this.mapCanvas, this.tileGrid))
         .catch(error => console.error('Error processing canvas:', error));
     })
   }
