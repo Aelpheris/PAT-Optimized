@@ -1,7 +1,7 @@
 
 
-export function redrawCanvas(canvas, img) {
-  const ctx = canvas.getContext('2d')
+export function redrawCanvas(canvas: HTMLCanvasElement, img: HTMLImageElement) {
+  const ctx = canvas.getContext('2d')!
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
 }
 

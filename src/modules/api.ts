@@ -5,6 +5,18 @@ export class API {
     this.url = new URL(url)
   }
 
+  private async get(route: string): Promise<Response> {
+    return fetch(this.url + route, {
+      method: 'GET'
+    })
+    .then(response => {
+      return response.json()
+    })
+    .catch(error => {
+      console.error('Error fulfilling GET request: ', error)
+    })
+  }
+
   private async post(route: string, data: FormData): Promise<Response> {
     return fetch(this.url + route, {
       method: 'POST',
