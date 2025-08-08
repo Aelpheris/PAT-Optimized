@@ -106,9 +106,9 @@ export class TileAnalyzer {
     return results;
   }
 
-  public async downloadUniqueTiles(): Promise<Response> {
+  public async uploadUniqueTiles(): Promise<Response> {
     try {
-      const url = 'http://localhost:3000/api/upload-multi';
+      const url = 'http://localhost:3000/upload-multi';
       const formData = new FormData();
 
       const images = await this.extractTileImages();

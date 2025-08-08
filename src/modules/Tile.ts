@@ -171,8 +171,8 @@ export function findUniqueTilesInBackground(tilesMap, tileWidth, tileHeight) {
   });
 }
 
-export function download(canvas: HTMLCanvasElement, filename: string): void {
-  const url = 'http://localhost:3000/api/download'
+export function upload(canvas: HTMLCanvasElement, filename: string): void {
+  const url = 'http://localhost:3000/upload'
 
   if (!filename.toLowerCase().endsWith('.png')) {
     filename = `${filename}.png`
@@ -229,7 +229,7 @@ export function getAttributes(tile) {
 
 }
 
-function downloadTile() {
+function uploadTile() {
   const link = document.createElement('a')
   link.download = 'tile'
   link.href = tileCanvas.toDataURL()

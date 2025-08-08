@@ -3,11 +3,9 @@ import * as Tile from './modules/Tile'
 import { TileGrid } from './modules/TileGrid'
 import * as ui from './modules/ui'
 
-const TILE_WIDTH = 12
-const TILE_HEIGHT = 12
-const tileSize = 12
-
-let tilesMap: Map<string, object> = new Map()
+const TILE_WIDTH = 14
+const TILE_HEIGHT = 14
+const tileSize = 14
 
 let isDragging: boolean = false
 let hasMoved: boolean = false
@@ -34,30 +32,34 @@ class App {
   private currentTile: { row: number, col: number } | null = null
 
   // Tile Grid
-  private readonly tileSize: number = 12
+  private readonly tileSize: number = 14
   private tileGrid: TileGrid
 
   constructor() {
     this.mapCanvas = document.getElementById('map') as HTMLCanvasElement
     this.mapCtx = this.mapCanvas.getContext('2d', { 'willReadFrequently': true })!
     this.tileCanvas = document.getElementById('selected-tile') as HTMLCanvasElement
-    this.img.src = './map.jpg'
-
-    const gridWidth = this.mapCanvas.width / this.tileSize
-    const gridHeight = this.mapCanvas.height / this.tileSize
-    this.tileGrid = new TileGrid(gridWidth, gridHeight)
-  }
-
-  main(): void {
+    this.img.src = './myMap_1754504152734.png'
 
     this.bindEventListeners(this.mapCanvas, this.tileCanvas, this.img)
 
     // Wait for DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', () => {
       this.initializeCanvas(this.mapCanvas, this.img, this.tileSize)
+      .then(() => {
+        this.tileGrid = this.createGrid(this.mapCanvas.width, this.mapCanvas.height, this.tileSize)
+      })
         .then(() => this.processTiles(this.mapCanvas, this.tileGrid))
         .catch(error => console.error('Error processing canvas:', error));
     })
+  }
+
+  private createGrid(canvasWidth: number, canvasHeight: number, tileSize: number): TileGrid {
+    const gridWidth = canvasWidth / tileSize
+    const gridHeight = canvasHeight / tileSize
+    console.log('gridWidth: ', gridWidth)
+    console.log('gridHeigh: ', gridHeight)
+    return new TileGrid(gridWidth, gridHeight)
   }
 
   drawTileToCanvas(event: MouseEvent, mapCanvas: HTMLCanvasElement, tileCanvas: HTMLCanvasElement, tileSize: number) {
@@ -123,7 +125,7 @@ class App {
 
     downloadButton.addEventListener('click', (e) => {
       e.preventDefault()
-      Tile.download(tileCanvas, filenameInput.value)
+      Tile.upload(tileCanvas, filenameInput.value)
     })
 
     mapCanvas.addEventListener('mousedown', (e) => {
@@ -183,6 +185,18 @@ class App {
 
           // Redraw selected tile to the navbar canvas
           if (startTile) {
+            // Get selected tile to return data about tile
+            console.log('grid height: ', this.tileGrid.height)
+            console.log('grid width: ', this.tileGrid.width)
+            const tile = ui.getTileFromMouse(e, mapCanvas, this.tileSize, gridWidth, gridHeight)
+            const tileData = this.tileGrid.getTile(tile.col, tile.row)
+            const tileCanvasOffscreen = new OffscreenCanvas(this.tileSize, this.tileSize)
+            const offScreenCtx = tileCanvasOffscreen.getContext('2d')
+            offScreenCtx?.drawImage(this.mapCanvas, tile.col, tile.row, tile.col * this.tileSize, tile.row * this.tileSize)
+            const imageData = offScreenCtx?.getImageData(0, 0, this.tileSize, this.tileSize)
+
+            console.log('imageData: ', imageData?.data)
+
             this.drawTileToCanvas(e, mapCanvas, tileCanvas, tileSize)
           }
         }
@@ -254,6 +268,4 @@ function updateRectangularSelection(): void {
   }
 }
 
-
-const app = new App()
-app.main()
+new App()
