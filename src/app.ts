@@ -21,7 +21,7 @@ class App {
 
   // Tile Grid
   private readonly tileSize: number = 14
-  private tileGrid: TileGrid
+  private tileGrid!: TileGrid
 
   // API
   private api: API
@@ -29,19 +29,17 @@ class App {
   constructor() {
     this.mapCanvas = document.getElementById('map') as HTMLCanvasElement
     this.mapCanvas.getContext('2d', { 'willReadFrequently': true })!
-    this.tileCanvas = document.getElementById('selected-tile') as HTMLCanvasElement
     this.img.src = './myMap_1754504152734.png'
+    this.tileCanvas = document.getElementById('selected-tile') as HTMLCanvasElement
     this.api = new API('http://localhost:3000')
-
 
     // Wait for DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', () => {
       this.initializeCanvas(this.mapCanvas, this.img, this.tileSize)
         .then(() => {
-          this.tileGrid = this.createGrid(this.mapCanvas.width, this.mapCanvas.height, this.tileSize)
-        })
-        .then(() => {
           this.bindEventListeners()
+          this.tileGrid = this.createGrid(this.mapCanvas.width, this.mapCanvas.height, this.tileSize)
+          console.log('number of tiles: ', this.tileGrid.width * this.tileGrid.height)
           // this.api.uploadImage(this.mapCanvas, 'map.png')
         })
         // .then(() => this.processTiles(this.mapCanvas, this.tileGrid))
@@ -132,9 +130,13 @@ class App {
       Tile.upload(this.tileCanvas, filenameInput.value)
     })
 
-    const grid = document.getElementById('grid')!
-    grid.addEventListener('change', () => {
-      ui.toggleGrid(this.mapCanvas, this.img, this.tileGrid.width, this.tileGrid.height)
+    const gridToggle = document.getElementById('grid') as HTMLInputElement
+    gridToggle.addEventListener('change', (e) => {
+      if (gridToggle.checked) {
+      ui.toggleGrid(this.mapCanvas, this.tileSize)
+      } else {
+        ui.redrawCanvas(this.mapCanvas, this.img)
+      }
     })
   }
 
