@@ -1,3 +1,4 @@
+import { showAttributes } from "./Tile"
 
 export class UI {
 
@@ -66,4 +67,24 @@ export function toggleGrid(canvas: HTMLCanvasElement, tileSize: number) {
   // just for fun
   ctx.lineWidth = 1
   ctx.stroke()
+}
+
+export function showAttributes(divId: string, attributes: Object) {
+  const div = document.getElementById(divId)
+
+  // Remove any previous attribute text
+  if (div?.hasChildNodes) {
+    while (div.firstChild) {
+      div.removeChild(div.firstChild)
+    }
+  }
+
+  const header = document.createElement('h4')
+  const p = document.createElement('p')
+
+  header.textContent = 'Tile Attributes'
+  p.textContent = JSON.stringify(attributes, undefined, 2)
+
+  div?.appendChild(header)
+  div?.appendChild(p)
 }

@@ -1,25 +1,5 @@
-import * as ui from './ui' 
 
-export const tileSize = 14
-const TILE_WIDTH = 14
-const TILE_HEIGHT = 14
-
-export function select(event, mapCanvas, tilesMap, tileCanvas) {
-  const tileCtx = tileCanvas.getContext('2d')
-
-  const tileData = fromMap(event, mapCanvas, tilesMap)
-
-  // Draw selected tile to navbar canvas
-  tileCtx.drawImage(mapCanvas, tileData.x * tileSize, tileData.y * tileSize, tileSize, tileSize, 0, 0, 56, 56)
-
-  // Highlight the selected tile
-  ui.highlight(mapCanvas, tileData.x * tileSize, tileData.y * tileSize, TILE_WIDTH, TILE_HEIGHT)
-
-  // Enable downloading
-  document.getElementById('downloadButton').disabled = false
-
-  return tileData
-}
+const tileSize = 14
 
 // Function to slice canvas in the background
 export function sliceCanvasInBackground(canvas, tileWidth, tileHeight) {
@@ -91,8 +71,8 @@ export function fromMap(event, canvas, tilesMap) {
   const y = event.clientY - rect.top
 
   // Calculate which tile was clicked
-  const mapX = Math.floor(x / TILE_WIDTH)
-  const mapY = Math.floor(y / TILE_HEIGHT)
+  const mapX = Math.floor(x / tileSize)
+  const mapY = Math.floor(y / tileSize)
 
   // Get the tile from the map
   const key = `${mapX},${mapY}`
@@ -171,36 +151,6 @@ export function findUniqueTilesInBackground(tilesMap, tileWidth, tileHeight) {
   });
 }
 
-export function upload(canvas: HTMLCanvasElement, filename: string): void {
-  const url = 'http://localhost:3000/upload'
-
-  if (!filename.toLowerCase().endsWith('.png')) {
-    filename = `${filename}.png`
-  }
-
-  canvas.toBlob((blob) => {
-    const formData = new FormData()
-    formData.append('image', blob, filename)
-
-    fetch(url, {
-      method: 'POST',
-      body: formData,
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error ${response.status}`)
-        }
-        return response.json()
-      })
-      .then(data => {
-        console.log('File download successful: ', data)
-      })
-      .catch(error => {
-        console.error('Error downloading file: ', error)
-      })
-  }, 'image/png')
-}
-
 export function matchTiles(tile1, tile2) {
   // First, check if dimensions match
   if (tile1.width !== tile2.width || tile1.height !== tile2.height) {
@@ -222,23 +172,4 @@ export function matchTiles(tile1, tile2) {
   }
 
   return true
-}
-
-// Returns an object of the selected tile's attributes e.g. grid coordinates, tile type, etc.
-export function getAttributes(tile) {
-
-}
-
-function uploadTile() {
-  const link = document.createElement('a')
-  link.download = 'tile'
-  link.href = tileCanvas.toDataURL()
-  link.click()
-  link.remove()
-}
-
-export function updateTileAttributeBox(tileData) {
-  const text = `<p>Coordinates: (${tileData.tileX}, ${tileData.tileY})</p>`
-  const textBox = document.getElementById('attributeTextBox')
-  textBox.innerHTML = text
 }

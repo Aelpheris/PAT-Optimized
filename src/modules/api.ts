@@ -30,9 +30,9 @@ export class API {
       })
   }
 
-  public async uploadImage(img: HTMLCanvasElement, fileName: string, metadata?: Object): Promise<Response> {
+  public async uploadImage(canvas: HTMLCanvasElement, fileName: string, metadata?: Object): Promise<Response> {
     const blob = await new Promise<Blob>((resolve, reject) => {
-      img.toBlob((blob) => {
+      canvas.toBlob((blob) => {
         if (blob) {
           resolve(blob)
         } else {

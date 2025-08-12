@@ -78,7 +78,7 @@ function tilesAreEqual(tileA, tileB) {
 }
 
 // More efficient hash-based comparison (optional)
-function calculateTileHash(tileData) {
+function calculateImageHash(tileData) {
   // Simple hash function - can be improved for better uniqueness
   let hash = 0;
   const data = tileData.data;

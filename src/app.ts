@@ -127,7 +127,7 @@ class App {
     const downloadButton = document.getElementById('downloadButton') as HTMLButtonElement
     downloadButton.addEventListener('click', (e) => {
       e.preventDefault()
-      Tile.upload(this.tileCanvas, filenameInput.value)
+      this.api.uploadImage(this.tileCanvas, filenameInput.value)
     })
 
     const gridToggle = document.getElementById('grid') as HTMLInputElement
@@ -211,8 +211,6 @@ class App {
         // Redraw selected tile to the navbar canvas
         if (this.startTile) {
           // Get selected tile to return data about tile
-          console.log('grid height: ', this.tileGrid.height)
-          console.log('grid width: ', this.tileGrid.width)
           const tile = ui.getTileFromMouse(e, this.mapCanvas, this.tileSize, this.tileGrid.width, this.tileGrid.height)
           const tileData = this.tileGrid.getTile(tile.col, tile.row)
           const tileCanvasOffscreen = new OffscreenCanvas(this.tileSize, this.tileSize)
@@ -220,7 +218,14 @@ class App {
           offScreenCtx?.drawImage(this.mapCanvas, tile.col, tile.row, tile.col * this.tileSize, tile.row * this.tileSize)
           const imageData = offScreenCtx?.getImageData(0, 0, this.tileSize, this.tileSize)
 
-          console.log('imageData: ', imageData?.data)
+          const attributes = {
+            tileData: tileData,
+            x: tile.row,
+            y: tile.col,
+            // imageData: imageData?.data
+          }
+
+          ui.showAttributes('attributes', attributes)
 
           this.drawTileToCanvas(e, this.mapCanvas, this.tileCanvas, this.tileSize)
         }
