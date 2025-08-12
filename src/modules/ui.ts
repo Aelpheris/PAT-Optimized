@@ -1,4 +1,8 @@
 
+export class UI {
+
+
+}
 
 export function redrawCanvas(canvas: HTMLCanvasElement, img: HTMLImageElement) {
   const ctx = canvas.getContext('2d')!
@@ -31,8 +35,8 @@ export function getTileFromMouse(
   }
 }
 
-export function toggleGrid(canvas, tileSize) {
-  const ctx = canvas.getContext('2d')
+export function toggleGrid(canvas: HTMLCanvasElement, tileSize: number) {
+  const ctx = canvas.getContext('2d')!
 
   const width = canvas.width
   const height = canvas.height

@@ -30,7 +30,7 @@ export class API {
       })
   }
 
-  public async uploadImage(img: HTMLCanvasElement, fileName: string): Promise<Response> {
+  public async uploadImage(img: HTMLCanvasElement, fileName: string, metadata?: Object): Promise<Response> {
     const blob = await new Promise<Blob>((resolve, reject) => {
       img.toBlob((blob) => {
         if (blob) {
@@ -43,6 +43,9 @@ export class API {
 
     const formData = new FormData()
     formData.append('image', blob, fileName)
+    if (metadata) {
+      formData.append('metadata', JSON.stringify(metadata))
+    }
     return this.post('upload', formData)
   }
 }

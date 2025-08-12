@@ -39,3 +39,37 @@ export const upload = multer({
   },
   // limits: { fileSize: 5 * 1024 * 1024 }
 })
+
+// Helper function to save metadata as JSON file
+export const saveMetadataFile = async (imagePath: string, metadata: any): Promise<string> => {
+  // Get the image filename without extension
+  const imageDir = path.dirname(imagePath)
+  const imageName = path.basename(imagePath, path.extname(imagePath))
+
+  // Create metadata filename (same base name but with .json extension)
+  const metadataFilename = `${imageName}.json`
+  const metadataPath = path.join(imageDir, metadataFilename)
+
+  // Add some additional metadata
+  const enrichedMetadata = {
+    ...metadata,
+    imageFile: path.basename(imagePath),
+    uploadedAt: new Date().toISOString(),
+    fileSize: await getFileSize(imagePath),
+  };
+
+  // Write JSON file
+  fs.writeFileSync(metadataPath, JSON.stringify(enrichedMetadata, null, 2), 'utf-8')
+
+  return metadataPath
+}
+
+// Helper function to get file size
+async function getFileSize(filePath: string): Promise<number> {
+  let size = 0
+  await fs.stat(filePath, (_, stats) => {
+    size = stats.size
+  })
+
+  return size
+}

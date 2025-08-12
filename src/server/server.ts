@@ -12,6 +12,7 @@ class Server {
     this.express = express()
     this.express.use(cors())
     this.express.use(express.json({ limit: '20mb' }))
+    this.express.use(express.urlencoded({ extended: true, limit: '20mb'}))
     this.routes()
 
     this.express.listen(this.port, () => {
