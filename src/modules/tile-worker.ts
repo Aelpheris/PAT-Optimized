@@ -77,29 +77,8 @@ function tilesAreEqual(tileA, tileB) {
   return true;
 }
 
-// More efficient hash-based comparison (optional)
-function calculateImageHash(tileData) {
-  // Simple hash function - can be improved for better uniqueness
-  let hash = 0;
-  const data = tileData.data;
-  
-  // Sample pixels at regular intervals for efficiency
-  // Adjust sampling rate based on your needs
-  const samplingRate = Math.max(1, Math.floor(data.length / 1000));
-  
-  for (let i = 0; i < data.length; i += samplingRate * 4) {
-    const r = data[i];
-    const g = data[i+1];
-    const b = data[i+2];
-    const a = data[i+3];
-    
-    // Combine values into hash
-    hash = ((hash << 5) - hash) + r;
-    hash = ((hash << 5) - hash) + g;
-    hash = ((hash << 5) - hash) + b;
-    hash = ((hash << 5) - hash) + a;
-    hash |= 0; // Convert to 32-bit integer
-  }
-  
-  return hash;
+async function sha256Hash(data: Uint8ClampedArray<ArrayBuffer>): Promise<string> {
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data.buffer) // Use data.buffer
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 }

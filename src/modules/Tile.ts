@@ -173,3 +173,9 @@ export function matchTiles(tile1, tile2) {
 
   return true
 }
+
+export async function sha256Hash(data: Uint8ClampedArray<ArrayBuffer>): Promise<string> {
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data.buffer) // Use data.buffer
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+}

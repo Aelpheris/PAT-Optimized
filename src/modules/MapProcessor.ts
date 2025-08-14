@@ -1,15 +1,16 @@
-import { TileGrid } from './TileGrid';
-import { Tile } from './TileType';
-import { TileTypeRegistry } from './TileTypeRegistry';
+import { TileGrid } from './TileGrid'
+import { Tile } from './TileType'
+import { TileTypeRegistry } from './TileTypeRegistry'
 
 export class MapProcessor {
-  private tileRegistry: TileTypeRegistry;
-  private readonly tileSize: number = 14
+  private tileRegistry: TileTypeRegistry
+  private readonly tileSize: number
 
 
-  constructor() {
-    this.tileRegistry = new TileTypeRegistry();
-    this.registerKnownTileTypes();
+  constructor(tileSize: number) {
+    this.tileRegistry = new TileTypeRegistry()
+    this.tileSize = tileSize
+    this.registerKnownTileTypes()
   }
 
   private registerKnownTileTypes(): void {
@@ -27,31 +28,29 @@ export class MapProcessor {
       },
       createTile: () => ({
         type: {
-        id: 'unexplored',
-        name: 'Unexplored',
-        category: 'special',
-        imageIndex: 0
+          id: 'unexplored',
+          name: 'Unexplored',
+          category: 'special',
+          imageIndex: 0
         }
       }) as Tile
     })
   }
 
   getImageData(canvas: HTMLCanvasElement, x: number, y: number): ImageData {
-    const canvasX = x * canvas.width
-    const canvasY = y * canvas.height
     const ctx = canvas.getContext('2d')!
-
-    return ctx.getImageData(canvasX, canvasY, this.tileSize, this.tileSize)
+    return ctx.getImageData(x, y, this.tileSize, this.tileSize)
   }
 
-  processMap(canvas: HTMLCanvasElement, tileGrid: TileGrid): void {
+  processMap(canvas: HTMLCanvasElement, tileGrid: TileGrid) {
     for (let y = 0; y < tileGrid.height; y++) {
       for (let x = 0; x < tileGrid.width; x++) {
-        const imageData = this.getImageData(canvas, x, y)
+        const width = x * this.tileSize
+        const height = y * this.tileSize
+        const imageData = this.getImageData(canvas, width, height)
         const identifiedTile = this.tileRegistry.identifyTile(imageData)
-        if(identifiedTile) {
+        if (identifiedTile) {
           tileGrid.setTile(x, y, identifiedTile)
-          console.log('tile type: ', typeof identifiedTile)
         }
       }
     }

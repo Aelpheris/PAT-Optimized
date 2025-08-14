@@ -42,7 +42,16 @@ class App {
           console.log('number of tiles: ', this.tileGrid.width * this.tileGrid.height)
           // this.api.uploadImage(this.mapCanvas, 'map.png')
         })
-        // .then(() => this.processTiles(this.mapCanvas, this.tileGrid))
+        .then(() => {
+          this.processTiles(this.mapCanvas, this.tileGrid)
+        })
+        .then(() => {
+          const tiles = this.tileGrid.getAllNonDefaultTiles()
+          tiles.forEach((tile) => {
+            ui.highlight(this.mapCanvas, tile.x * this.tileSize, tile.y * this.tileSize, this.tileSize, this.tileSize)
+          })
+          console.log('Tiles added to TileGrid: ', this.tileGrid.size())
+        })
         .catch(error => console.error('Error processing canvas:', error));
     })
   }
@@ -105,7 +114,7 @@ class App {
   // Process individual tiles to sort into types
   private async processTiles(canvas: HTMLCanvasElement, tileGrid): Promise<void> {
     try {
-      const mapProcessor = new MapProcessor()
+      const mapProcessor = new MapProcessor(this.tileSize)
       mapProcessor.processMap(canvas, tileGrid)
     } catch (error) {
       console.error('Error processing tiles:', error)
@@ -133,7 +142,7 @@ class App {
     const gridToggle = document.getElementById('grid') as HTMLInputElement
     gridToggle.addEventListener('change', (e) => {
       if (gridToggle.checked) {
-      ui.toggleGrid(this.mapCanvas, this.tileSize)
+        ui.toggleGrid(this.mapCanvas, this.tileSize)
       } else {
         ui.redrawCanvas(this.mapCanvas, this.img)
       }
@@ -214,18 +223,21 @@ class App {
           const tile = ui.getTileFromMouse(e, this.mapCanvas, this.tileSize, this.tileGrid.width, this.tileGrid.height)
           const tileData = this.tileGrid.getTile(tile.col, tile.row)
           const tileCanvasOffscreen = new OffscreenCanvas(this.tileSize, this.tileSize)
-          const offScreenCtx = tileCanvasOffscreen.getContext('2d')
+          const offScreenCtx = tileCanvasOffscreen.getContext('2d')!
           offScreenCtx?.drawImage(this.mapCanvas, tile.col, tile.row, tile.col * this.tileSize, tile.row * this.tileSize)
-          const imageData = offScreenCtx?.getImageData(0, 0, this.tileSize, this.tileSize)
+          const imageData = offScreenCtx.getImageData(0, 0, this.tileSize, this.tileSize)
 
-          const attributes = {
-            tileData: tileData,
-            x: tile.row,
-            y: tile.col,
-            // imageData: imageData?.data
-          }
+          Tile.sha256Hash(imageData.data).then((imageHash) => {
 
-          ui.showAttributes('attributes', attributes)
+            const attributes = {
+              tileData: tileData,
+              x: tile.row,
+              y: tile.col,
+              imageHash: imageHash
+            }
+
+            ui.showAttributes('attributes', attributes)
+          })
 
           this.drawTileToCanvas(e, this.mapCanvas, this.tileCanvas, this.tileSize)
         }
