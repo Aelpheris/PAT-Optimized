@@ -45,13 +45,6 @@ class App {
         .then(() => {
           this.processTiles(this.mapCanvas, this.tileGrid)
         })
-        .then(() => {
-          const tiles = this.tileGrid.getAllNonDefaultTiles()
-          tiles.forEach((tile) => {
-            ui.highlight(this.mapCanvas, tile.x * this.tileSize, tile.y * this.tileSize, this.tileSize, this.tileSize)
-          })
-          console.log('Tiles added to TileGrid: ', this.tileGrid.size())
-        })
         .catch(error => console.error('Error processing canvas:', error));
     })
   }
@@ -147,7 +140,20 @@ class App {
         ui.redrawCanvas(this.mapCanvas, this.img)
       }
     })
+
+    const knownTileToggle = document.getElementById('known-tiles') as HTMLInputElement
+    knownTileToggle.addEventListener('change', (e) => {
+      if (knownTileToggle.checked) {
+        const tiles = this.tileGrid.getAllNonDefaultTiles()
+        tiles.forEach((tile) => {
+          ui.highlight(this.mapCanvas, tile.x * this.tileSize, tile.y * this.tileSize, this.tileSize, this.tileSize)
+        })
+      } else {
+        ui.redrawCanvas(this.mapCanvas, this.img)
+      }
+    })
   }
+
 
   private mouseDown(e: MouseEvent) {
     this.isDragging = true
