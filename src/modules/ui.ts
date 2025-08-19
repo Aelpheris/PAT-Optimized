@@ -1,4 +1,3 @@
-import { showAttributes } from "./Tile"
 
 export class UI {
 

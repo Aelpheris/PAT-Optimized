@@ -40,17 +40,12 @@ class App {
           this.bindEventListeners()
           this.tileGrid = this.createGrid(this.mapCanvas.width, this.mapCanvas.height, this.tileSize)
           console.log('number of tiles: ', this.tileGrid.width * this.tileGrid.height)
-          // this.api.uploadImage(this.mapCanvas, 'map.png')
         })
         .then(() => {
           this.processTiles(this.mapCanvas, this.tileGrid)
         })
         .catch(error => console.error('Error processing canvas:', error));
     })
-  }
-
-  private async init(): Promise<void> {
-    await this.initializeCanvas(this.mapCanvas, this.img, this.tileSize)
   }
 
   // Initialize the canvas with an image
@@ -96,8 +91,11 @@ class App {
 
     const tile = ui.getTileFromMouse(event, mapCanvas, tileSize, this.tileGrid.width, this.tileGrid.height)
 
+    const sx = tile.col * tileSize
+    const sy = tile.row * tileSize
+
     // Draw selected tile to navbar canvas
-    tileCtx.drawImage(mapCanvas, tile.row * tileSize, tile.col * tileSize, tileSize, tileSize, 0, 0, 56, 56)
+    tileCtx.drawImage(mapCanvas, sx, sy, tileSize, tileSize, 0, 0, 56, 56)
 
     // Enable downloading
     const downloadButton = document.getElementById('downloadButton') as HTMLButtonElement
@@ -226,20 +224,32 @@ class App {
         // Redraw selected tile to the navbar canvas
         if (this.startTile) {
           // Get selected tile to return data about tile
-          const tile = ui.getTileFromMouse(e, this.mapCanvas, this.tileSize, this.tileGrid.width, this.tileGrid.height)
-          const tileData = this.tileGrid.getTile(tile.col, tile.row)
+          const tileCoord = ui.getTileFromMouse(e, this.mapCanvas, this.tileSize, this.tileGrid.width, this.tileGrid.height)
+          const tileData = this.tileGrid.getTile(tileCoord.col, tileCoord.row)
+
+          // Use offscreen canvas to get image data before image is resized for navbar
           const tileCanvasOffscreen = new OffscreenCanvas(this.tileSize, this.tileSize)
           const offScreenCtx = tileCanvasOffscreen.getContext('2d')!
-          offScreenCtx?.drawImage(this.mapCanvas, tile.col, tile.row, tile.col * this.tileSize, tile.row * this.tileSize)
+          offScreenCtx.clearRect(0, 0, this.tileSize, this.tileSize)
+          const sx = tileCoord.col * this.tileSize
+          const sy = tileCoord.row * this.tileSize
+          offScreenCtx.drawImage(this.mapCanvas, sx, sy, this.tileSize, this.tileSize, 0, 0, this.tileSize, this.tileSize)
           const imageData = offScreenCtx.getImageData(0, 0, this.tileSize, this.tileSize)
+
+          // Get center pixel color
+          const centerIdx = (imageData.width / 2 * 4) + (imageData.height / 2 * imageData.width * 4);
+          const r = imageData.data[centerIdx];
+          const g = imageData.data[centerIdx + 1];
+          const b = imageData.data[centerIdx + 2];
 
           Tile.sha256Hash(imageData.data).then((imageHash) => {
 
             const attributes = {
               tileData: tileData,
-              x: tile.row,
-              y: tile.col,
-              imageHash: imageHash
+              x: tileCoord.col,
+              y: tileCoord.row,
+              imageHash: imageHash,
+              rgb: `${r},${g},${b}`
             }
 
             ui.showAttributes('attributes', attributes)
