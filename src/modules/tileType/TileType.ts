@@ -1,22 +1,10 @@
-import { UnknownTileType } from "./SpecialTileType"
+import { BuildingTileType } from "./BuildingTileType"
+import { LandTileType } from "./LandTileType"
+import { SpecialTileType } from "./SpecialTileType"
+import { AquaticTileType } from "./WaterTileType"
 
 
-
-// Base tile categories to group by common attributes
-export type TileCategory = 'special' | 'water'
-
-// Base tile interface with common properties
-export interface BaseTileType {
-  id: string
-  name: string
-  category: TileCategory
-}
-
-export interface WaterTileType extends TileType {
-  category: 'water'
-}
-
-export type TileType = BaseTileType
+export type TileType = SpecialTileType | AquaticTileType | LandTileType | BuildingTileType
 
 export interface Tile<T extends TileType = TileType> {
   type: T

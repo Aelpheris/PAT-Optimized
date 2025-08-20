@@ -252,7 +252,7 @@ class App {
               rgb: `${r},${g},${b}`
             }
 
-            ui.showAttributes('attributes', attributes)
+            // ui.showAttributes('attributes', attributes)
           })
 
           this.drawTileToCanvas(e, this.mapCanvas, this.tileCanvas, this.tileSize)

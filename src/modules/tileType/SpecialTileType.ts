@@ -1,11 +1,12 @@
-import { Tile, TileType } from "./TileType";
+import { Tile } from "./TileType";
+import { BaseTileType } from "./BaseTileType";
 
 
 // Unknown or unexplored tiles
 
 // Used to build upon identifying initial tile types,
 // and useful to quickly identify new tiles added to the map
-export interface SpecialTileType extends TileType {
+export interface SpecialTileType extends BaseTileType {
   category: 'special';
 }
 
@@ -26,9 +27,9 @@ export interface UnrestoredTileType extends SpecialTileType {
 
 // Type guard functions to check for specific tile types
 export function isUnknownTile(tile: Tile): tile is Tile<UnknownTileType> {
-  return tile.type.id === '-1' && tile.type.name === 'unknown';
+  return tile.type.name === 'unknown'
 }
 
 export function isUnexploredTile(tile: Tile): tile is Tile<UnexploredTileType> {
-  return tile.type.id === '0' && tile.type.name === 'unexplored';
+  return tile.type.name === 'unexplored'
 }
