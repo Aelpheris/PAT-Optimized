@@ -1,4 +1,5 @@
-import { Tile, UnknownTileType } from "./TileType";
+import { Tile } from "./tileType/TileType";
+import { UnknownTileType } from "./tileType/SpecialTileType";
 
 
 /**
@@ -20,9 +21,8 @@ export class TileGrid {
     defaultTile: Tile<UnknownTileType> = {
       type: {
         id: '-1',
-        name: 'Unknown',
-        category: 'special',
-        imageIndex: -1
+        name: 'unknown',
+        category: 'special'
       }
     }
   ) {

@@ -1,4 +1,4 @@
-import { Tile } from "./TileType"
+import { Tile } from "./tileType/TileType"
 
 interface TileTypeMatcher {
   id: string
@@ -35,9 +35,8 @@ export class TileTypeRegistry {
     return {
       type: {
       id: '-1',
-      name: 'Unknown',
-      category: 'special',
-      imageIndex: -1
+      name: 'unknown',
+      category: 'special'
       }
     } as Tile
   }

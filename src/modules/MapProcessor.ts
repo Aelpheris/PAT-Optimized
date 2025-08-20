@@ -1,5 +1,5 @@
 import { TileGrid } from './TileGrid'
-import { Tile } from './TileType'
+import { Tile } from './tileType/TileType'
 import { TileTypeRegistry } from './TileTypeRegistry'
 
 export class MapProcessor {
@@ -15,7 +15,7 @@ export class MapProcessor {
 
   private registerKnownTileTypes(): void {
     this.tileRegistry.registerTileType({
-      id: 'unexplored',
+      id: '0',
       centerPixelColor: '#000000',
       match: (imageData) => {
         // Get center pixel color
@@ -30,16 +30,15 @@ export class MapProcessor {
       },
       createTile: () => ({
         type: {
-          id: 'unexplored',
+          id: '0',
           name: 'Unexplored',
-          category: 'special',
-          imageIndex: 0
+          category: 'special'
         }
       }) as Tile
     })
 
     this.tileRegistry.registerTileType({
-      id: 'unexplored',
+      id: '0',
       centerPixelColor: '#000000',
       match: (imageData) => {
         // Get center pixel color
@@ -54,10 +53,9 @@ export class MapProcessor {
       },
       createTile: () => ({
         type: {
-          id: 'unexplored',
+          id: '0',
           name: 'Unexplored',
-          category: 'special',
-          imageIndex: 0
+          category: 'special'
         }
       }) as Tile
     })
@@ -78,10 +76,9 @@ export class MapProcessor {
       },
       createTile: () => ({
         type: {
-          id: 'unexplored',
+          id: '0',
           name: 'Unexplored',
-          category: 'special',
-          imageIndex: 0
+          category: 'special'
         }
       }) as Tile
     })
@@ -102,10 +99,9 @@ export class MapProcessor {
       },
       createTile: () => ({
         type: {
-          id: 'unexplored',
+          id: '0',
           name: 'Unexplored',
-          category: 'special',
-          imageIndex: 0
+          category: 'special'
         }
       }) as Tile
     })
@@ -126,10 +122,9 @@ export class MapProcessor {
       },
       createTile: () => ({
         type: {
-          id: 'unexplored',
+          id: '0',
           name: 'Unexplored',
-          category: 'special',
-          imageIndex: 0
+          category: 'special'
         }
       }) as Tile
     })
@@ -150,10 +145,9 @@ export class MapProcessor {
       },
       createTile: () => ({
         type: {
-          id: 'unexplored',
+          id: '0',
           name: 'Unexplored',
-          category: 'special',
-          imageIndex: 0
+          category: 'special'
         }
       }) as Tile
     })
@@ -174,10 +168,9 @@ export class MapProcessor {
       },
       createTile: () => ({
         type: {
-          id: 'unexplored',
+          id: '0',
           name: 'Unexplored',
-          category: 'special',
-          imageIndex: 0
+          category: 'special'
         }
       }) as Tile
     })
@@ -198,10 +191,9 @@ export class MapProcessor {
       },
       createTile: () => ({
         type: {
-          id: 'unexplored',
+          id: '0',
           name: 'Unexplored',
-          category: 'special',
-          imageIndex: 0
+          category: 'special'
         }
       }) as Tile
     })
