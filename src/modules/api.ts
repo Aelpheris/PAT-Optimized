@@ -48,4 +48,8 @@ export class API {
     }
     return this.post('upload', formData)
   }
+
+  public async getAllTiles(): Promise<Response> {
+    return this.get('allTiles')
+  }
 }

@@ -1,7 +1,7 @@
 import { BuildingTileType } from "./BuildingTileType"
 import { LandTileType } from "./LandTileType"
 import { SpecialTileType } from "./SpecialTileType"
-import { AquaticTileType } from "./WaterTileType"
+import { AquaticTileType } from "./AquaticTileType"
 
 
 export type TileType = SpecialTileType | AquaticTileType | LandTileType | BuildingTileType

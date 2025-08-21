@@ -1,4 +1,4 @@
-import express, { Request, Response, Router } from 'express'
+import express from 'express'
 import cors from 'cors'
 import { upload } from './multer'
 import { uploadImage, uploadImages } from './controller'
